@@ -1,0 +1,143 @@
+import { useEffect, useState, useCallback, useRef } from 'react';
+import { supabase } from '../lib/supabase';
+import { useAuth } from './useAuth';
+
+interface NotificationData {
+  id: string;
+  type: 'request' | 'offer';
+  title: string;
+  message: string;
+  hospitalName: string;
+  medicationName: string;
+  urgency?: string;
+  timestamp: string;
+  relatedId?: string;
+  isRead?: boolean;
+  isDismissed?: boolean;
+}
+
+export const useNotifications = () => {
+  const { user } = useAuth();
+  const [notifications, setNotifications] = useState<NotificationData[]>([]);
+  const [permission, setPermission] = useState<NotificationPermission>('default');
+  const [lastUpdate, setLastUpdate] = useState(0);
+
+  // Request notification permission
+  const requestPermission = async () => {
+    if ('Notification' in window) {
+      const result = await Notification.requestPermission();
+      setPermission(result);
+      return result === 'granted';
+    }
+    return false;
+  };
+
+  // Show browser notification with enhanced features
+  const showNotification = useCallback((data: NotificationData) => {
+    if (permission === 'granted' && 'Notification' in window) {
+      const notification = new Notification(data.title, {
+        body: data.message,
+        icon: '/vite.svg',
+        tag: data.id
+      });
+
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+      };
+    }
+  }, [permission]);
+
+  // Add notification to local state
+  const addNotification = useCallback((data: NotificationData) => {
+    setNotifications(prev => {
+      if (prev.some(n => n.id === data.id)) {
+        return prev;
+      }
+      return [data, ...prev.slice(0, 19)]; // Limit to 20 notifications
+    });
+    setLastUpdate(Date.now());
+    showNotification(data);
+  }, [showNotification]);
+
+  // Clear all notifications for current user only
+  const clearNotifications = useCallback(() => {
+    if (!user) return;
+    setNotifications([]);
+    setLastUpdate(Date.now());
+  }, []);
+
+  // Mark notification as read for current user only
+  const markAsRead = useCallback((id: string) => {
+    if (!user) return;
+    setNotifications(prev => prev.filter(n => n.id !== id));
+    setLastUpdate(Date.now());
+  }, []);
+
+  // Force refresh notifications from database
+  const refreshNotifications = useCallback(async () => {
+    if (!user) return;
+    try {
+      const { data, error } = await supabase
+        .from('notifications')
+        .select('*')
+        .order('created_at', { ascending: false })
+        .limit(10);
+
+      if (error) {
+        console.error('Error refreshing notifications:', error);
+        return;
+      }
+
+      if (data) {
+        const formattedNotifications = data.map(item => ({
+            id: item.id,
+            type: item.type as 'request' | 'offer',
+            title: item.title,
+            message: item.message,
+            hospitalName: item.hospital_name,
+            medicationName: item.medication_name,
+            urgency: item.urgency,
+            timestamp: item.created_at,
+            relatedId: item.related_id
+          }));
+        
+        setNotifications(formattedNotifications);
+        setLastUpdate(Date.now());
+      }
+    } catch (error) {
+      console.error('Network error refreshing notifications:', error);
+    }
+  }, [user]);
+
+  // Main effect for setting up the notification system
+  useEffect(() => {
+    if (!user) {
+      return;
+    }
+
+    if ('Notification' in window) {
+      setPermission(Notification.permission);
+    }
+
+    refreshNotifications();
+
+    // Simple polling for notifications
+    const interval = setInterval(refreshNotifications, 30000); // Every 30 seconds
+
+    return () => {
+      clearInterval(interval);
+    };
+  }, [user, refreshNotifications]);
+
+  return {
+    notifications,
+    permission,
+    lastUpdate,
+    requestPermission,
+    refreshNotifications,
+    clearNotifications,
+    markAsRead,
+    unreadCount: notifications.filter(n => !n.isRead).length
+  };
+};
