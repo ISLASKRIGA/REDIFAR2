@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Plus, Clock, AlertTriangle, Filter, Grid, List } from 'lucide-react';
 import { useMedicationRequests } from '../hooks/useMedicationRequests';
-import { useMedications } from '../hooks/useMedications';
 import { useHospitals } from '../hooks/useHospitals';
 import { useAuth } from '../hooks/useAuth';
 import { useNotifications } from '../hooks/useNotifications';
@@ -14,7 +13,6 @@ interface MedicationRequestsProps {
 export const MedicationRequests: React.FC<MedicationRequestsProps> = ({ onNavigate }) => {
   const { user } = useAuth();
   const { requests, loading, createRequest } = useMedicationRequests();
-  const { medications } = useMedications();
   const { hospitals } = useHospitals();
   const { requestPermission, refreshNotifications } = useNotifications();
   
@@ -78,7 +76,7 @@ export const MedicationRequests: React.FC<MedicationRequestsProps> = ({ onNaviga
     try {
       const { error } = await createRequest({
         hospital_id: userHospital.id,
-        medication_id: formData.medicationName, // Will be converted to actual ID in the hook
+medication_name: formData.medicationName, // ✅ Correcto
         quantity_requested: formData.quantity,
         urgency: formData.urgency,
         reason: formData.reason,
@@ -191,7 +189,7 @@ export const MedicationRequests: React.FC<MedicationRequestsProps> = ({ onNaviga
             <div key={request.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">{request.medications?.name || 'Medicamento no disponible'}</h3>
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">{request.medication_name || 'Medicamento no disponible'}</h3>
                   <p className="text-xs sm:text-sm text-gray-600">{request.hospitals?.name || 'Hospital no disponible'}</p>
                 </div>
                 <div className="flex items-center space-x-2">
@@ -210,7 +208,7 @@ export const MedicationRequests: React.FC<MedicationRequestsProps> = ({ onNaviga
                   </div>
                   <div>
                     <p className="text-gray-600">Dosificación</p>
-                    <p className="font-medium">{request.medications?.dosage || 'No especificada'}</p>
+                    <p className="font-medium">{request.dosage || 'No especificada'}</p>
                   </div>
                   <div>
                     <p className="text-gray-600">Fecha Necesaria</p>
@@ -274,9 +272,9 @@ export const MedicationRequests: React.FC<MedicationRequestsProps> = ({ onNaviga
                   <tr key={request.id} className="hover:bg-gray-50">
                     <td className="px-3 sm:px-6 py-4">
                       <div>
-                        <div className="text-xs sm:text-sm font-medium text-gray-900 truncate max-w-32 sm:max-w-none">{request.medications?.name || 'Medicamento no disponible'}</div>
+                        <div className="text-xs sm:text-sm font-medium text-gray-900 truncate max-w-32 sm:max-w-none">{request.medication_name || 'Medicamento no disponible'}</div>
                         <div className="text-xs text-gray-500 sm:hidden">{request.hospitals?.name || 'Hospital no disponible'}</div>
-                        <div className="text-xs text-gray-500 hidden sm:block">{request.medications?.dosage || 'No especificada'}</div>
+                        <div className="text-xs text-gray-500 hidden sm:block">{request.dosage || 'No especificada'}</div>
                       </div>
                     </td>
                     <td className="px-3 sm:px-6 py-4 whitespace-nowrap hidden sm:table-cell">
@@ -299,7 +297,7 @@ export const MedicationRequests: React.FC<MedicationRequestsProps> = ({ onNaviga
                     </td>
                     <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-right text-xs sm:text-sm font-medium">
                       <button 
-                        onClick={() => handleContactHospital(request.hospitals?.id, request.hospitals?.name, `Solicitud: ${request.medications?.name}`)}
+                        onClick={() => handleContactHospital(request.hospitals?.id, request.hospitals?.name, `Solicitud: ${request.medication_name}`)}
                         className="bg-teal-600 text-white px-2 sm:px-3 py-1 rounded-md hover:bg-teal-700 transition-colors text-xs"
                       >
                         <span className="sm:hidden">Resp.</span>

@@ -45,6 +45,7 @@ const isProcessingExternalMessage = useRef(false);
     // Mapeo para saber cuándo fue el último mensaje de cada hospital
   const [hospitalLastMessageMap, setHospitalLastMessageMap] = useState<Record<string, string>>({});
   const [unreadMap, setUnreadMap] = useState<Record<string, boolean>>({});
+  const [lastMessagesMap, setLastMessagesMap] = useState<Record<string, Message>>({});
 
 useEffect(() => {
   const loadOrder = () => {
@@ -382,7 +383,7 @@ lastMessagesMap[partnerId] = lastMessage.content;
     );
   }
   // Diccionario con el último mensaje por hospital
-const lastMessagesMap: { [hospitalId: string]: string } = {};
+const tempLastMessagesMap: { [hospitalId: string]: string } = {};
 
 messages.slice().reverse().forEach((msg) => {
   const otherId =

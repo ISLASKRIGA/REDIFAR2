@@ -4,7 +4,6 @@ import { Database } from '../lib/supabase';
 
 type MedicationRequest = Database['public']['Tables']['medication_requests']['Row'] & {
   hospitals: Database['public']['Tables']['hospitals']['Row'];
-  medications: Database['public']['Tables']['medications']['Row'];
 };
 
 export const useMedicationRequests = () => {
@@ -26,17 +25,6 @@ export const useMedicationRequests = () => {
             state,
             phone,
             email
-          ),
-          medications (
-            id,
-            name,
-            generic_name,
-            dosage,
-            form,
-            manufacturer,
-            category,
-            requires_refrigeration,
-            controlled_substance
           )
         `)
         .eq('status', 'pending')
@@ -57,45 +45,15 @@ export const useMedicationRequests = () => {
 
   const createRequest = async (requestData: Database['public']['Tables']['medication_requests']['Insert']) => {
     try {
-      // First, ensure the medication exists or create it
-      const { data: existingMedication } = await supabase
-        .from('medications')
-        .select('id')
-        .eq('name', requestData.medication_id) // Assuming medication_id is actually the name for now
-        .maybeSingle();
-
-      let medicationId = existingMedication?.id;
-      
-      if (!medicationId) {
-        // Create the medication if it doesn't exist
-        const { data: newMedication, error: medError } = await supabase
-          .from('medications')
-          .insert([{
-            name: requestData.medication_id as string,
-            generic_name: requestData.medication_id as string,
-            dosage: '500mg', // Default values - should be from form
-            form: 'tablet',
-            manufacturer: 'Unknown',
-            category: 'other'
-          }])
-          .select()
-          .single();
-      }
-
       const { data, error } = await supabase
         .from('medication_requests')
-        .insert([{
-          ...requestData,
-          medication_id: medicationId
-        }])
+        .insert([requestData])
         .select()
         .single();
 
       if (error) throw error;
-      
-      // Force refresh after a short delay to ensure triggers have fired
+
       setTimeout(fetchRequests, 500);
-      
       return { data, error: null };
     } catch (err) {
       return { data: null, error: err instanceof Error ? err.message : 'Error creating request' };
@@ -112,7 +70,7 @@ export const useMedicationRequests = () => {
         .single();
 
       if (error) throw error;
-      await fetchRequests(); // Refresh the list
+      await fetchRequests();
       return { data, error: null };
     } catch (err) {
       return { data: null, error: err instanceof Error ? err.message : 'Error updating request' };
