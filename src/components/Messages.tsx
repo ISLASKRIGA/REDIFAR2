@@ -28,6 +28,15 @@ export const Messages: React.FC = () => {
   const [lastProcessedMessageId, setLastProcessedMessageId] = useState<string | null>(null);
 const isProcessingExternalMessage = useRef(false);
 
+  const [isMobile, setIsMobile] = useState(false);
+
+useEffect(() => {
+const checkIsMobile = () => setIsMobile(window.innerWidth < 1024);
+  checkIsMobile();
+  window.addEventListener('resize', checkIsMobile);
+  return () => window.removeEventListener('resize', checkIsMobile);
+}, []);
+
 
   
   const otherHospitals = (hospitals || []).filter(h => h.user_id !== user?.id);
@@ -121,7 +130,7 @@ useEffect(() => {
     lastMessage.sender_hospital_id === currentHospital.id
       ? lastMessage.recipient_hospital_id
       : lastMessage.sender_hospital_id;
-lastMessagesMap[partnerId] = lastMessage.content;
+tempLastMessagesMap[partnerId] = lastMessage.content;
 
   // ✅ SOLO SI ES UN MENSAJE RECIBIDO DE OTRA CONVERSACIÓN
   if (
@@ -391,8 +400,8 @@ messages.slice().reverse().forEach((msg) => {
       ? msg.recipient_hospital_id
       : msg.sender_hospital_id;
 
-  if (!lastMessagesMap[otherId]) {
-    lastMessagesMap[otherId] = msg.content;
+  if (!tempLastMessagesMap[otherId]) {
+    tempLastMessagesMap[otherId] = msg.content;
   }
 });
 
@@ -400,7 +409,9 @@ messages.slice().reverse().forEach((msg) => {
   return (
     <div className="h-[calc(100vh-10rem)] sm:h-[calc(100vh-12rem)] lg:h-[calc(100vh-8rem)] flex flex-col lg:flex-row bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
       {/* Sidebar - Hospitals List */}
-      <div className="w-full lg:w-1/3 border-b lg:border-b-0 lg:border-r border-gray-200 flex flex-col max-h-48 lg:max-h-none bg-gray-50 lg:bg-white">
+     <div className={`flex flex-col ${isMobile && selectedHospital ? 'hidden' : 'flex'} w-full lg:w-1/3`}>
+
+
         {/* Header */}
         <div className={`p-3 sm:p-4 bg-gradient-to-r ${hospitalColor.gradient} text-white lg:rounded-none`}>
           <div className="flex items-center justify-between mb-4">
@@ -469,7 +480,7 @@ messages.slice().reverse().forEach((msg) => {
                               {hospital.name}
                             </h3>
                             <p className="text-xs text-gray-600 truncate mt-0.5 font-medium">
-  {lastMessagesMap[hospital.id] || ''}
+  {tempLastMessagesMap[hospital.id] || ''}
 </p>
 
                             <p className="text-xs text-gray-400 mt-1 hidden lg:block">
@@ -507,7 +518,7 @@ messages.slice().reverse().forEach((msg) => {
       </div>
 
       {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col min-h-0">
+<div className={`flex-1 flex flex-col min-h-0 ${isMobile && !selectedHospital ? 'hidden' : 'flex'}`}>
         {selectedHospital ? (
           <>
             {(() => {
@@ -517,6 +528,15 @@ messages.slice().reverse().forEach((msg) => {
             {/* Chat Header */}
             <div className="p-3 sm:p-4 border-b border-gray-200 bg-gray-50">
               <div className="flex items-center justify-between">
+  {isMobile && (
+    <button
+      onClick={() => setSelectedHospital(null)}
+      className="text-blue-600 text-sm font-medium mr-2 hover:underline"
+    >
+      ← Atrás
+    </button>
+  )}
+
                 <div className="flex items-center space-x-2 sm:space-x-3">
                   <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm ${hospitalColor.primary}`}>
                     {getHospitalInitials(hospital?.name || 'Hospital')}
