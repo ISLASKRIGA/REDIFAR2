@@ -77,17 +77,22 @@ export const MedicationOffers: React.FC<MedicationOffersProps> = ({ onNavigate }
 
     try {
       const { error } = await createOffer({
-        hospital_id: userHospital.id,
-        medication_id: formData.medicationName, // Will be converted to actual ID in the hook
-        quantity_available: formData.quantity,
-        price_per_unit: formData.pricePerUnit ? parseFloat(formData.pricePerUnit) : null,
-        expiration_date: formData.expirationDate,
-        conditions: formData.conditions,
-        contact_person: formData.contactPerson,
-        contact_phone: formData.contactPhone,
-        contact_email: user.email || '',
-        valid_until: formData.validUntil
-      });
+  hospital_id: userHospital.id,
+  medication_name: formData.medicationName, // ← texto libre
+  generic_name: formData.genericName,
+  dosage: formData.dosage,
+  quantity_available: formData.quantity,
+  price_per_unit: formData.pricePerUnit ? parseFloat(formData.pricePerUnit) : null,
+  expiration_date: formData.expirationDate,
+  conditions: formData.conditions,
+  contact_person: formData.contactPerson,
+  contact_phone: formData.contactPhone,
+  contact_email: user.email || '',
+  valid_until: formData.validUntil,
+  requires_refrigeration: formData.requiresRefrigeration,
+  controlled_substance: formData.controlledSubstance
+});
+
 
       if (!error) {
         setShowForm(false);
@@ -194,20 +199,15 @@ export const MedicationOffers: React.FC<MedicationOffersProps> = ({ onNavigate }
             <div key={offer.id} className="bg-white rounded-lg shadow-sm border border-gray-200 p-4 sm:p-6">
               <div className="flex items-start justify-between mb-4">
                 <div>
-                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">{offer.medications?.name || 'Medicamento no disponible'}</h3>
+                  <h3 className="text-base sm:text-lg font-semibold text-gray-900">{offer.medication_name}</h3>
                   <p className="text-xs sm:text-sm text-gray-600">{offer.hospitals?.name || 'Hospital no disponible'}</p>
                 </div>
                 <div className="flex flex-col sm:flex-row items-end sm:items-center space-y-1 sm:space-y-0 sm:space-x-2">
                   <span className="px-2 py-1 text-xs font-medium rounded-full bg-teal-100 text-teal-800 whitespace-nowrap">
-                    {categoryLabels[offer.medications?.category] || 'Sin categoría'}
+                    Medicamento
                   </span>
                   <div className="flex items-center space-x-1">
-                    {offer.medications?.requires_refrigeration && (
-                      <Thermometer className="w-3 h-3 sm:w-4 sm:h-4 text-blue-500" title="Requiere refrigeración" />
-                    )}
-                    {offer.medications?.controlled_substance && (
-                      <AlertCircle className="w-3 h-3 sm:w-4 sm:h-4 text-red-500" title="Sustancia controlada" />
-                    )}
+                    <Package className="w-3 h-3 sm:w-4 sm:h-4 text-teal-500" title="Medicamento disponible" />
                   </div>
                 </div>
               </div>
@@ -220,7 +220,7 @@ export const MedicationOffers: React.FC<MedicationOffersProps> = ({ onNavigate }
                   </div>
                   <div>
                     <p className="text-gray-600">Presentación</p>
-                    <p className="font-medium">{offer.medications?.dosage || 'No especificada'}</p>
+                    <p className="font-medium">Unidad</p>
                   </div>
                   <div>
                     <p className="text-gray-600">Fecha de caducidad</p>
@@ -252,7 +252,7 @@ export const MedicationOffers: React.FC<MedicationOffersProps> = ({ onNavigate }
                   {new Date(offer.valid_until).toLocaleDateString()}
                 </div>
                 <button 
-                  onClick={() => handleContactHospital(offer.hospitals?.id, offer.hospitals?.name, `Oferta: ${offer.medications?.name}`)}
+                  onClick={() => handleContactHospital(offer.hospitals?.id, offer.hospitals?.name, `Oferta: ${offer.medication_name}`)}
                   className="bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors text-sm"
                 >
                   Contactar
@@ -295,18 +295,13 @@ export const MedicationOffers: React.FC<MedicationOffersProps> = ({ onNavigate }
                   <tr key={offer.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div>
-                        <div className="text-sm font-medium text-gray-900">{offer.medications?.name || 'Medicamento no disponible'}</div>
-                        <div className="text-sm text-gray-500">{offer.medications?.dosage || 'No especificada'}</div>
+                        <div className="text-sm font-medium text-gray-900">{offer.medication_name}</div>
+                        <div className="text-sm text-gray-500">Unidad</div>
                         <div className="flex items-center space-x-1 mt-1">
                           <span className="px-2 py-1 text-xs font-medium rounded-full bg-teal-100 text-teal-800">
-                            {categoryLabels[offer.medications?.category] || 'Sin categoría'}
+                            Medicamento
                           </span>
-                          {offer.medications?.requires_refrigeration && (
-                            <Thermometer className="w-3 h-3 text-blue-500" title="Requiere refrigeración" />
-                          )}
-                          {offer.medications?.controlled_substance && (
-                            <AlertCircle className="w-3 h-3 text-red-500" title="Sustancia controlada" />
-                          )}
+                          <Package className="w-3 h-3 text-teal-500" title="Medicamento disponible" />
                         </div>
                       </div>
                     </td>
@@ -329,7 +324,7 @@ export const MedicationOffers: React.FC<MedicationOffersProps> = ({ onNavigate }
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
                       <button 
-                        onClick={() => handleContactHospital(offer.hospitals?.id, offer.hospitals?.name, `Oferta: ${offer.medications?.name}`)}
+                        onClick={() => handleContactHospital(offer.hospitals?.id, offer.hospitals?.name, `Oferta: ${offer.medication_name}`)}
                         className="bg-blue-600 text-white px-3 py-1 rounded-md hover:bg-blue-700 transition-colors"
                       >
                         Contactar
@@ -353,7 +348,7 @@ export const MedicationOffers: React.FC<MedicationOffersProps> = ({ onNavigate }
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Clave CNIS
+                      Código del Medicamento
                     </label>
                     <input
                       type="text"
@@ -390,7 +385,7 @@ export const MedicationOffers: React.FC<MedicationOffersProps> = ({ onNavigate }
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Unidad de medida
+                      Cantidad Disponible
                     </label>
                     <input
                       type="number"
@@ -417,7 +412,7 @@ export const MedicationOffers: React.FC<MedicationOffersProps> = ({ onNavigate }
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Cantidad a Dispisición
+                      Precio por Unidad (Opcional)
                     </label>
                     <input
                       type="number"
