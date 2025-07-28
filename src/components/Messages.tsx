@@ -54,6 +54,8 @@ const checkIsMobile = () => setIsMobile(window.innerWidth < 1024);
     // Mapeo para saber cuándo fue el último mensaje de cada hospital
   const [hospitalLastMessageMap, setHospitalLastMessageMap] = useState<Record<string, string>>({});
   const [unreadMap, setUnreadMap] = useState<Record<string, boolean>>({});
+  const [unreadCountMap, setUnreadCountMap] = useState<Record<string, number>>({});
+
   const [lastMessagesMap, setLastMessagesMap] = useState<Record<string, Message>>({});
 
 useEffect(() => {
@@ -138,6 +140,14 @@ tempLastMessagesMap[partnerId] = lastMessage.content;
     lastMessage.sender_hospital_id !== currentHospital.id
   ) {
     setLastProcessedMessageId(lastMessage.id);
+    setUnreadCountMap((prev) => {
+  const prevCount = prev[partnerId] || 0;
+  return {
+    ...prev,
+    [partnerId]: prevCount + 1
+  };
+});
+
     setUnreadMap((prev) => ({ ...prev, [partnerId]: true }));
 
     setHospitalOrder((prevOrder) => {
@@ -451,10 +461,12 @@ messages.slice().reverse().forEach((msg) => {
                 return (
                   <div
                     key={hospital.id}
-                    onClick={() => {
+                   onClick={() => {
   setSelectedHospital(hospital.id);
   setUnreadMap(prev => ({ ...prev, [hospital.id]: false }));
+  setUnreadCountMap(prev => ({ ...prev, [hospital.id]: 0 }));
 }}
+
 
                     className={`p-3 sm:p-4 cursor-pointer transition-colors border-l-4 ${
                       isSelected 
@@ -466,12 +478,15 @@ messages.slice().reverse().forEach((msg) => {
                       <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm ${hospitalColor.primary} shadow-md`}>
                         {getHospitalInitials(hospital.name)}
                       </div>
-                      {unreadMap[hospital.id] && (
-                        <div
-                          className={`w-2 h-2 rounded-full ml-1 mt-1 ${hospitalColor.primary} animate-pulse`}
-                          title="Nuevo mensaje"
-                        />
-                      )}
+                      {unreadCountMap[hospital.id] > 0 && (
+  <div
+    className={`ml-auto mt-1 text-white text-xs font-bold rounded-full px-2 py-0.5 shadow-md ${hospitalColor.primary}`}
+    title={`${unreadCountMap[hospital.id]} mensaje(s) sin leer`}
+  >
+    {unreadCountMap[hospital.id]}
+  </div>
+)}
+
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between">
