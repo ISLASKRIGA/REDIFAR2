@@ -88,13 +88,13 @@ function App() {
   };
 
   return (
-  <div className="min-h-screen bg-gray-50 pt-14 sm:pt-16">
+  <div className="min-h-screen bg-gray-50 pt-14 sm:pt-16 pb-20 lg:pb-0">
     <Header />
     <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
 
     <MessageListener /> {/* 👈 AQUI VA */}
 
-    <main className="lg:ml-64 px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+    <main className="lg:ml-64 px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-4 lg:pb-8">
       {renderContent()}
     </main>
   </div>

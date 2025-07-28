@@ -397,20 +397,21 @@ messages.slice().reverse().forEach((msg) => {
 
 
   return (
-    <div className="h-[calc(100vh-6rem)] sm:h-[calc(100vh-8rem)] flex flex-col lg:flex-row bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+    <div className="h-[calc(100vh-10rem)] sm:h-[calc(100vh-12rem)] lg:h-[calc(100vh-8rem)] flex flex-col lg:flex-row bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
       {/* Sidebar - Hospitals List */}
-      <div className="w-full lg:w-1/3 border-b lg:border-b-0 lg:border-r border-gray-200 flex flex-col max-h-64 lg:max-h-none">
+      <div className="w-full lg:w-1/3 border-b lg:border-b-0 lg:border-r border-gray-200 flex flex-col max-h-48 lg:max-h-none bg-gray-50 lg:bg-white">
         {/* Header */}
-        <div className={`p-3 sm:p-4 bg-gradient-to-r ${hospitalColor.gradient} text-white`}>
+        <div className={`p-3 sm:p-4 bg-gradient-to-r ${hospitalColor.gradient} text-white lg:rounded-none`}>
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-base sm:text-lg font-bold flex items-center">
+            <h2 className="text-base sm:text-lg font-bold flex items-center lg:flex">
               <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
-              Red Hospitalaria
+              <span className="hidden sm:inline lg:inline">Red Hospitalaria</span>
+              <span className="sm:hidden lg:hidden">Chats</span>
             </h2>
           </div>
           
           {/* Search */}
-          <div className="relative">
+          <div className="relative hidden lg:block">
             <Search className="absolute left-2 sm:left-3 top-1/2 transform -translate-y-1/2 text-white/70 w-4 h-4" />
             <input
               type="text"
@@ -423,7 +424,7 @@ messages.slice().reverse().forEach((msg) => {
         </div>
 
         {/* Hospitals List */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto bg-white">
           {filteredHospitals.length === 0 ? (
             <div className="p-4 sm:p-6 text-center text-gray-500">
               <MessageCircle className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-3 text-gray-300" />
@@ -431,7 +432,7 @@ messages.slice().reverse().forEach((msg) => {
               <p className="text-xs sm:text-sm mt-1">No se encontraron hospitales en la red</p>
             </div>
           ) : (
-            <div className="divide-y divide-gray-100">
+            <div className="divide-y divide-gray-100 lg:divide-gray-200">
               {filteredHospitals.map((hospital) => {
                 const isSelected = selectedHospital === hospital.id;
                 
@@ -443,50 +444,55 @@ messages.slice().reverse().forEach((msg) => {
   setUnreadMap(prev => ({ ...prev, [hospital.id]: false }));
 }}
 
-                    className={`p-3 sm:p-4 cursor-pointer transition-colors ${
+                    className={`p-3 sm:p-4 cursor-pointer transition-colors border-l-4 ${
                       isSelected 
-                        ? `${hospitalColor.light} ${hospitalColor.text}` 
-                        : 'hover:bg-gray-50'
+                        ? `${hospitalColor.light} ${hospitalColor.text} ${hospitalColor.border}` 
+                        : 'hover:bg-gray-50 border-transparent'
                     }`}
                   >
                     <div className="flex items-start space-x-2 sm:space-x-3">
-                      <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-white font-bold text-xs sm:text-sm ${hospitalColor.primary}`}>
+                      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm ${hospitalColor.primary} shadow-md`}>
                         {getHospitalInitials(hospital.name)}
                       </div>
                       {unreadMap[hospital.id] && (
-  <div
-    className={`w-2 h-2 rounded-full ml-1 mt-0.5 ${hospitalColor.primary}`}
-    title="Nuevo mensaje"
-  />
-)}
+                        <div
+                          className={`w-2 h-2 rounded-full ml-1 mt-1 ${hospitalColor.primary} animate-pulse`}
+                          title="Nuevo mensaje"
+                        />
+                      )}
 
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between">
                           <div className="flex-1">
-                            <h3 className="text-sm sm:text-base font-medium text-gray-900 truncate">
+                            <h3 className="text-sm sm:text-base font-semibold text-gray-900 truncate">
                               {hospital.name}
                             </h3>
-                            <p className="text-xs text-gray-500 truncate mt-0.5">
+                            <p className="text-xs text-gray-600 truncate mt-0.5 font-medium">
   {lastMessagesMap[hospital.id] || ''}
 </p>
 
-                            <p className="text-xs text-gray-500 mt-1 hidden sm:block">
+                            <p className="text-xs text-gray-400 mt-1 hidden lg:block">
                               {hospital.city}, {hospital.state}
                             </p>
                           </div>
-                          <div className="text-right hidden sm:block">
-                            <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
+                          <div className="text-right hidden lg:block">
+                            <span className="text-xs text-gray-400">
+                              12:30
+                            </span>
+                            <div className="mt-1">
+                              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
                               {hospital.type === 'public' ? 'Público' : 
                                hospital.type === 'private' ? 'Privado' : 'Universitario'}
-                            </span>
+                              </span>
+                            </div>
                           </div>
                         </div>
-                        <div className="flex items-center justify-between mt-2 sm:hidden">
+                        <div className="flex items-center justify-between mt-2 lg:hidden">
                           <div className="flex items-center text-xs text-gray-500">
                             <span>{hospital.city}</span>
                           </div>
-                          <div className="flex items-center text-xs text-gray-500">
-                            <span>💬 Chat</span>
+                          <div className="flex items-center text-xs text-gray-400">
+                            <span>12:30</span>
                           </div>
                         </div>
                       </div>
@@ -568,7 +574,7 @@ messages.slice().reverse().forEach((msg) => {
             })()}
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4 bg-gray-50" style={{ minHeight: 0 }}>
+            <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4 bg-gray-50 lg:bg-white" style={{ minHeight: 0, backgroundImage: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23f0f0f0" fill-opacity="0.1"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")'}}>
               {messagesLoading ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-blue-600"></div>
@@ -589,19 +595,19 @@ messages.slice().reverse().forEach((msg) => {
                   return (
                     <div
                       key={message.id}
-                      className={`flex ${isOwn ? 'justify-end' : 'justify-start'} px-1 sm:px-0`}
+                      className={`flex ${isOwn ? 'justify-end' : 'justify-start'} px-1 sm:px-0 animate-fadeIn`}
                     >
-                      <div className={`max-w-xs sm:max-w-sm lg:max-w-md px-3 sm:px-4 py-2 rounded-lg shadow-sm transition-opacity ${
+                      <div className={`max-w-xs sm:max-w-sm lg:max-w-md px-3 sm:px-4 py-2 shadow-sm transition-opacity ${
                         isOwn 
-                          ? `bg-gradient-to-r ${hospitalColor.gradient} text-white` 
-                          : 'bg-white text-gray-900 border border-gray-200'
+                          ? `bg-gradient-to-r ${hospitalColor.gradient} text-white rounded-tl-2xl rounded-tr-2xl rounded-bl-2xl rounded-br-md` 
+                          : 'bg-white text-gray-900 border border-gray-200 rounded-tl-md rounded-tr-2xl rounded-bl-2xl rounded-br-2xl'
                       } ${isOptimistic ? 'opacity-70' : 'opacity-100'}`}>
                         {!isOwn && (
-                          <p className="text-xs font-medium mb-1 opacity-70 hidden sm:block">
+                          <p className="text-xs font-medium mb-1 opacity-70 hidden lg:block">
                             {message.sender_hospital?.name || 'Hospital'}
                           </p>
                         )}
-                        <p className="text-xs sm:text-sm leading-relaxed">{message.content}</p>
+                        <p className="text-sm leading-relaxed">{message.content}</p>
                         <div className={`flex items-center justify-end mt-1 space-x-1 ${
                           isOwn ? 'text-white/70' : 'text-gray-500'
                         }`}>
@@ -626,34 +632,33 @@ messages.slice().reverse().forEach((msg) => {
             </div>
 
             {/* Message Input */}
-            <form onSubmit={handleSendMessage} className="p-2 sm:p-4 border-t border-gray-200 bg-white">
-              <div className="flex space-x-1 sm:space-x-2">
+            <form onSubmit={handleSendMessage} className="p-3 sm:p-4 border-t border-gray-200 bg-white">
+              <div className="flex items-end space-x-2 sm:space-x-3">
                 <input
                   type="text"
                   value={messageText}
                   onChange={(e) => setMessageText(e.target.value)}
-                  placeholder="Escribe un mensaje..."
+                  placeholder="Escribe un mensaje"
                   disabled={sendingMessage || isSubmitting}
                   autoComplete="off"
-                  className="flex-1 px-3 sm:px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 text-sm"
+                  className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 text-sm bg-gray-50 resize-none max-h-20"
                 />
                 <button
                   type="submit"
                   disabled={!messageText.trim() || sendingMessage || isSubmitting}
-                  className={`px-3 sm:px-4 py-2 bg-gradient-to-r ${hospitalColor.gradient} text-white rounded-lg hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center space-x-1 sm:space-x-2`}
+                  className={`w-12 h-12 bg-gradient-to-r ${hospitalColor.gradient} text-white rounded-full hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center shadow-lg`}
                 >
                   {sendingMessage || isSubmitting ? (
-                    <div className="animate-spin rounded-full h-3 w-3 sm:h-4 sm:w-4 border-b-2 border-white"></div>
+                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
                   ) : (
-                    <Send className="w-3 h-3 sm:w-4 sm:h-4" />
+                    <Send className="w-5 h-5" />
                   )}
-                  {!sendingMessage && !isSubmitting && <span className="hidden md:inline text-sm">Enviar</span>}
                 </button>
               </div>
             </form>
           </>
         ) : (
-          <div className="flex-1 flex items-center justify-center text-gray-500 bg-gray-50">
+          <div className="flex-1 flex items-center justify-center text-gray-500 bg-gray-50 lg:bg-white">
             <div className="text-center">
               <MessageCircle className="w-16 h-16 mx-auto mb-4 text-gray-300" />
               <h3 className="text-lg font-medium text-gray-900 mb-2">

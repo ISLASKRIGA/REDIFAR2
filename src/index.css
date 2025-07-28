@@ -185,3 +185,41 @@
 .notification-scroll::-webkit-scrollbar-thumb:hover {
   background: #94a3b8;
 }
+
+/* WhatsApp-style animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.3s ease-out;
+}
+
+/* Safe area for mobile devices */
+.safe-area-pb {
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* Mobile message bubbles */
+@media (max-width: 1024px) {
+  .message-bubble {
+    max-width: 85%;
+  }
+}
+
+/* WhatsApp-style message input */
+.message-input {
+  border-radius: 25px;
+  background-color: #f0f2f5;
+}
+
+.message-input:focus {
+  background-color: white;
+}

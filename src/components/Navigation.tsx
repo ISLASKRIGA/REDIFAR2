@@ -32,26 +32,8 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab 
 
   return (
     <>
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-        className="lg:hidden fixed top-4 left-4 z-50 p-2 bg-white rounded-lg shadow-md"
-      >
-        {isMobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
-      </button>
-
-      {/* Mobile Overlay */}
-      {isMobileMenuOpen && (
-        <div 
-          className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-40"
-          onClick={() => setIsMobileMenuOpen(false)}
-        />
-      )}
-
-      {/* Navigation Menu */}
-      <nav className={`fixed left-0 top-14 sm:top-16 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] w-64 bg-white shadow-lg border-r border-gray-200 z-40 transform transition-transform duration-300 ease-in-out ${
-        isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-      } lg:translate-x-0`}>
+      {/* Desktop Navigation Menu */}
+      <nav className="hidden lg:block fixed left-0 top-14 sm:top-16 h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] w-64 bg-white shadow-lg border-r border-gray-200 z-40">
         <div className="p-4">
           <div className="space-y-2">
             {tabs.map((tab) => {
@@ -72,6 +54,36 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab 
               );
             })}
           </div>
+        </div>
+      </nav>
+
+      {/* Mobile Bottom Navigation - WhatsApp Style */}
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 z-50 safe-area-pb">
+        <div className="flex items-center justify-around py-2">
+          {tabs.map((tab) => {
+            const Icon = tab.icon;
+            const isActive = activeTab === tab.id;
+            return (
+              <button
+                key={tab.id}
+                onClick={() => handleTabClick(tab.id)}
+                className={`flex flex-col items-center justify-center py-2 px-3 min-w-0 flex-1 transition-colors duration-200 ${
+                  isActive 
+                    ? `${hospitalColor.text}` 
+                    : 'text-gray-500'
+                }`}
+              >
+                <div className={`p-1 rounded-lg ${isActive ? hospitalColor.light : ''}`}>
+                  <Icon className={`w-5 h-5 ${isActive ? 'animate-pulse' : ''}`} />
+                </div>
+                <span className={`text-xs mt-1 font-medium truncate max-w-full ${
+                  isActive ? 'font-semibold' : ''
+                }`}>
+                  {tab.label}
+                </span>
+              </button>
+            );
+          })}
         </div>
       </nav>
     </>
