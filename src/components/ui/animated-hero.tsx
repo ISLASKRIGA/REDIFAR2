@@ -11,7 +11,7 @@ function Hero({ onLoginClick }: HeroProps) {
   const [titleNumber, setTitleNumber] = useState(0);
 
   const titles = useMemo(
-    () => ["potente", "inteligente", "eficaz", "eficiente", "inovadora"],
+    () => ["trazable","medible", "inteligente", "eficaz", "eficiente", "sustentable"],
     []
   );
 
@@ -39,7 +39,7 @@ function Hero({ onLoginClick }: HeroProps) {
   useEffect(() => {
     const timeoutId = setTimeout(() => {
       setTitleNumber((prev) => (prev + 1) % titles.length);
-    }, 2000);
+    }, 2500);
     return () => clearTimeout(timeoutId);
   }, [titleNumber, titles.length]);
 
