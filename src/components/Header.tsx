@@ -42,8 +42,14 @@ export const Header: React.FC = () => {
             <NotificationCenter />
             
             <div className="hidden sm:flex items-center space-x-3 border-r border-white/30 pr-4">
-              <div className="w-8 h-8 bg-white/20 rounded-full flex items-center justify-center">
-                <User className="w-4 h-4 text-white" />
+              <div className="w-8 h-8 rounded-full overflow-hidden bg-white">
+  <img
+    src={`/logos/${userHospital?.id || 'default'}.png`}
+    alt="Logo hospital"
+    className="w-full h-full object-cover"
+  />
+</div>
+
               </div>
               <div className="text-sm">
                 
