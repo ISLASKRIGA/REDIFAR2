@@ -46,7 +46,10 @@ export const Header: React.FC = () => {
                 <User className="w-4 h-4 text-white" />
               </div>
               <div className="text-sm">
-                <p className="font-medium text-white">Dr. María González</p>
+                <div className="text-sm">
+  <p className="text-white/80">{userHospital?.name || 'Hospital General San Juan'}</p>
+</div>
+
                 <p className="text-white/80">{userHospital?.name || 'Hospital General San Juan'}</p>
               </div>
             </div>
