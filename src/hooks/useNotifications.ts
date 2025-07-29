@@ -116,7 +116,7 @@ const formattedNotifications = data.map(item => ({
   isRead: readIds.includes(item.id) // ✅ Solo marcar como no leído si no está en localStorage
 }));
 
-s
+
         
         setNotifications(formattedNotifications);
         setLastUpdate(Date.now());
