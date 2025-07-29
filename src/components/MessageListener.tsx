@@ -19,7 +19,7 @@ const MessageListener = () => {
 
     const channel = supabase.channel('global-messages', {
       broadcast: { self: true },
-    });KL
+    });
 
     const handler = (payload: any) => {
       const newMessage = payload.new;
