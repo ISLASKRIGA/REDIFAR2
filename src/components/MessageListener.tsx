@@ -17,19 +17,9 @@ const MessageListener = () => {
 
     console.log('✅ MessageListener activo para:', currentHospital.name);
 
-   const channel = supabase
-  .channel('global-messages')
-  .on(
-    'postgres_changes',
-    {
-      event: 'INSERT',
-      schema: 'public',
-      table: 'mensajes',
-    },
-    handler
-  )
-  .subscribe();
-
+    const channel = supabase.channel('global-messages', {
+      broadcast: { self: true },
+    });KL
 
     const handler = (payload: any) => {
       const newMessage = payload.new;
