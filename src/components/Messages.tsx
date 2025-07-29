@@ -139,12 +139,27 @@ useEffect(() => {
 
   const lastMessage = messages[messages.length - 1];
 
-  if (!lastMessage || lastMessage.id === lastProcessedMessageId) return;
+if (!lastMessage || lastMessage.id === lastProcessedMessageId) return;
 
-  const partnerId =
-    lastMessage.sender_hospital_id === currentHospital.id
-      ? lastMessage.recipient_hospital_id
-      : lastMessage.sender_hospital_id;
+const partnerId =
+  lastMessage.sender_hospital_id === currentHospital.id
+    ? lastMessage.recipient_hospital_id
+    : lastMessage.sender_hospital_id;
+
+// ✅ Guardar en localStorage y actualizar estado
+setLastMessagesMap((prev) => {
+  const updated = {
+    ...prev,
+    [partnerId]: {
+      text: lastMessage.content,
+      timestamp: lastMessage.created_at,
+    },
+  };
+  localStorage.setItem('lastMessages', JSON.stringify(updated));
+  window.dispatchEvent(new Event('lastMessagesUpdated'));
+  return updated;
+});
+
 tempLastMessagesMap[partnerId] = lastMessage.content;
 
   // ✅ SOLO SI ES UN MENSAJE RECIBIDO DE OTRA CONVERSACIÓN
