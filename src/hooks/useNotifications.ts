@@ -144,16 +144,18 @@ export const useNotifications = () => {
     }, payload => {
       const item = payload.new;
       addNotification({
-        id: item.id,
-        type: 'request',
-        title: 'Nueva solicitud de medicamento',
-        message: `${item.medication_name} solicitado por ${item.hospital_name}`,
-        hospitalName: item.hospital_name,
-        medicationName: item.medication_name,
-        urgency: item.urgency,
-        timestamp: item.created_at,
-        relatedId: item.id
-      });
+  id: item.id,
+  type: 'request',
+  title: 'Nueva solicitud de medicamento',
+  message: `${item.medication_name} solicitado por ${item.hospital_name}`,
+  hospitalName: item.hospital_name,
+  medicationName: item.medication_name,
+  urgency: item.urgency,
+  timestamp: item.created_at,
+  relatedId: item.id,
+  isRead: false // 👈 AÑADE ESTO
+});
+
     });
 
     // Ofertas nuevas
