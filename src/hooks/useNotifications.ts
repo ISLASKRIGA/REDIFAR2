@@ -92,16 +92,18 @@ export const useNotifications = () => {
 
       if (data) {
         const formattedNotifications = data.map(item => ({
-            id: item.id,
-            type: item.type as 'request' | 'offer',
-            title: item.title,
-            message: item.message,
-            hospitalName: item.hospital_name,
-            medicationName: item.medication_name,
-            urgency: item.urgency,
-            timestamp: item.created_at,
-            relatedId: item.related_id
-          }));
+  id: item.id,
+  type: item.type as 'request' | 'offer',
+  title: item.title,
+  message: item.message,
+  hospitalName: item.hospital_name,
+  medicationName: item.medication_name,
+  urgency: item.urgency,
+  timestamp: item.created_at,
+  relatedId: item.related_id,
+  isRead: false // 👈 Marca como no leído cuando se refrescan desde DB
+}));
+
         
         setNotifications(formattedNotifications);
         setLastUpdate(Date.now());
