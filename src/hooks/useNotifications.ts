@@ -68,11 +68,12 @@ export const useNotifications = () => {
   }, []);
 
   // Mark notification as read for current user only
-  const markAsRead = useCallback(() => {
+ const markAsRead = useCallback(() => {
   if (!user) return;
-  setNotifications([]); // ✅ Elimina todas las notificaciones
+  setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
   setLastUpdate(Date.now());
 }, [user]);
+
 
 
 
