@@ -70,7 +70,14 @@ export const useNotifications = () => {
   // Mark notification as read for current user only
  const markAsRead = useCallback(() => {
   if (!user) return;
-  setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+
+  setNotifications(prev => {
+    const readIds = prev.map(n => n.id);
+    localStorage.setItem('readNotificationIds', JSON.stringify(readIds)); // ✅ Guardar en localStorage
+
+    return prev.map(n => ({ ...n, isRead: true }));
+  });
+
   setLastUpdate(Date.now());
 }, [user]);
 
