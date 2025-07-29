@@ -417,30 +417,17 @@ setLastMessagesMap((prev) => {
     }
   };
 
- const getHospitalInitials = (name: string) => {
-  return name.split(' ').map(word => word.charAt(0)).join('').substring(0, 2).toUpperCase();
-};
+  const getHospitalInitials = (name: string) => {
+    return name.split(' ').map(word => word.charAt(0)).join('').substring(0, 2).toUpperCase();
+  };
 
-const hospitalAvatar = (hospital: any) => (
-  <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-white shadow-md flex items-center justify-center">
-    <img
-      src={`/logos/${hospital.id}.png`}
-      alt={hospital.name}
-      className="w-full h-full object-contain"
-      onError={(e) => {
-        const target = e.currentTarget;
-        target.onerror = null;
-        target.style.display = 'none';
-        const parent = target.parentElement;
-        if (parent) {
-          parent.innerHTML = `<span style='color: white; font-weight: bold; font-size: 0.875rem;'>${getHospitalInitials(hospital.name)}</span>`;
-          parent.style.backgroundColor = '#7c3aed'; // o cualquier color por defecto
-        }
-      }}
-    />
-  </div>
-);
-
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
   // Diccionario con el último mensaje por hospital
 const tempLastMessagesMap: { [hospitalId: string]: string } = {};
 
@@ -515,13 +502,8 @@ messages.slice().reverse().forEach((msg) => {
                     }`}
                   >
                     <div className="flex items-start space-x-2 sm:space-x-3">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-white shadow-md">
-  <img
-    src={`/logos/${hospital.id}.png`}
-    alt={hospital.name}
-    className="w-full h-full object-contain"
-  />
-</div>
+                     {hospitalAvatar(hospital)}
+
 
                       {unreadCountMap[hospital.id] > 0 && (
   <div
