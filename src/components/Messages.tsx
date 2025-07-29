@@ -502,8 +502,13 @@ messages.slice().reverse().forEach((msg) => {
                     }`}
                   >
                     <div className="flex items-start space-x-2 sm:space-x-3">
-                     {hospitalAvatar(hospital)}
-
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-white shadow-md">
+  <img
+    src={`/logos/${hospital.id}.png`}
+    alt={hospital.name}
+    className="w-full h-full object-contain"
+  />
+</div>
 
                       {unreadCountMap[hospital.id] > 0 && (
   <div
