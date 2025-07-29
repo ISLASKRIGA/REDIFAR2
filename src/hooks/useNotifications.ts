@@ -129,6 +129,57 @@ export const useNotifications = () => {
       clearInterval(interval);
     };
   }, [user, refreshNotifications]);
+  // Escucha en tiempo real las solicitudes y ofertas nuevas
+  useEffect(() => {
+    if (!user) return;
+
+    const channel = supabase.channel('realtime:notifications');
+
+    // Solicitudes nuevas
+    channel.on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'medication_requests'
+    }, payload => {
+      const item = payload.new;
+      addNotification({
+        id: item.id,
+        type: 'request',
+        title: 'Nueva solicitud de medicamento',
+        message: `${item.medication_name} solicitado por ${item.hospital_name}`,
+        hospitalName: item.hospital_name,
+        medicationName: item.medication_name,
+        urgency: item.urgency,
+        timestamp: item.created_at,
+        relatedId: item.id
+      });
+    });
+
+    // Ofertas nuevas
+    channel.on('postgres_changes', {
+      event: 'INSERT',
+      schema: 'public',
+      table: 'medication_offers'
+    }, payload => {
+      const item = payload.new;
+      addNotification({
+        id: item.id,
+        type: 'offer',
+        title: 'Nuevo insumo disponible',
+        message: `${item.medication_name} ofrecido por ${item.hospital_name}`,
+        hospitalName: item.hospital_name,
+        medicationName: item.medication_name,
+        timestamp: item.created_at,
+        relatedId: item.id
+      });
+    });
+
+    channel.subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [user, addNotification]);
 
   return {
     notifications,
