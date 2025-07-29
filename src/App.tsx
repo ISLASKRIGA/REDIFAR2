@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HeroDemo } from './components/ui/demo';
 import { useAuth } from './hooks/useAuth';
 import { useHospitals } from './hooks/useHospitals';
@@ -12,7 +12,6 @@ import { MedicationOffers } from './components/MedicationOffers';
 import { HospitalNetwork } from './components/HospitalNetwork';
 import { Messages } from './components/Messages';
 import MessageListener from './components/MessageListener';
-
 
 function App() {
   const { user, loading: authLoading } = useAuth();
@@ -60,8 +59,14 @@ function App() {
     );
   }
 
-  // Check if user needs to set up hospital
- 
+  // ✅ Solicitar permiso de notificaciones del sistema
+  useEffect(() => {
+    if ('Notification' in window && Notification.permission === 'default') {
+      Notification.requestPermission().then(permission => {
+        console.log('🔔 Permiso de notificaciones:', permission);
+      });
+    }
+  }, []);
 
   const renderContent = () => {
     switch (activeTab) {
@@ -88,18 +93,17 @@ function App() {
   };
 
   return (
-  <div className="min-h-screen bg-gray-50 pt-14 sm:pt-16 pb-20 lg:pb-0">
-    <Header />
-    <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
+    <div className="min-h-screen bg-gray-50 pt-14 sm:pt-16 pb-20 lg:pb-0">
+      <Header />
+      <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
 
-    <MessageListener /> {/* 👈 AQUI VA */}
+      <MessageListener /> {/* 👈 Escucha de mensajes en tiempo real */}
 
-    <main className="lg:ml-64 px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-4 lg:pb-8">
-      {renderContent()}
-    </main>
-  </div>
-);
-
+      <main className="lg:ml-64 px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-4 lg:pb-8">
+        {renderContent()}
+      </main>
+    </div>
+  );
 }
 
 export default App;
