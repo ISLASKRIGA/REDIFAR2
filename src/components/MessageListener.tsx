@@ -30,7 +30,6 @@ const MessageListener = () => {
   )
   .subscribe();
 
-   
 
     const handler = (payload: any) => {
       const newMessage = payload.new;
