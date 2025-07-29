@@ -98,7 +98,7 @@ function App() {
       {renderContent()}
     </main>
   </div>
-);S
+);
 
 }
 
