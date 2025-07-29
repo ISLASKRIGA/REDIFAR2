@@ -68,11 +68,12 @@ export const useNotifications = () => {
   }, []);
 
   // Mark notification as read for current user only
-  const markAsRead = useCallback((id: string) => {
-    if (!user) return;
-    setNotifications(prev => prev.filter(n => n.id !== id));
-    setLastUpdate(Date.now());
-  }, []);
+  const markAsRead = useCallback(() => {
+  if (!user) return;
+  setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
+  setLastUpdate(Date.now());
+}, []);
+
 
   // Force refresh notifications from database
   const refreshNotifications = useCallback(async () => {
