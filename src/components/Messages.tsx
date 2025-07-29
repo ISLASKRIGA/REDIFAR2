@@ -27,7 +27,6 @@ export const Messages: React.FC = () => {
   const [hospitalOrder, setHospitalOrder] = useState<string[]>([]);
   const [lastProcessedMessageId, setLastProcessedMessageId] = useState<string | null>(null);
 const isProcessingExternalMessage = useRef(false);
-const [lastMessagesMap, setLastMessagesMap] = useState<Record<string, { text: string; timestamp: string }>>({});
 
   const [isMobile, setIsMobile] = useState(false);
 
@@ -56,6 +55,7 @@ const checkIsMobile = () => setIsMobile(window.innerWidth < 1024);
   const [hospitalLastMessageMap, setHospitalLastMessageMap] = useState<Record<string, string>>({});
   const [unreadMap, setUnreadMap] = useState<Record<string, boolean>>({});
   const [unreadCountMap, setUnreadCountMap] = useState<Record<string, number>>({});
+const [lastMessagesMap, setLastMessagesMap] = useState<Record<string, { text: string; timestamp: string }>>({});
 
   const [lastMessagesMap, setLastMessagesMap] = useState<Record<string, Message>>({});
 
