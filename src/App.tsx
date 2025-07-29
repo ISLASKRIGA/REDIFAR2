@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { HeroDemo } from './components/ui/demo';
 import { useAuth } from './hooks/useAuth';
 import { useHospitals } from './hooks/useHospitals';
@@ -13,6 +13,7 @@ import { HospitalNetwork } from './components/HospitalNetwork';
 import { Messages } from './components/Messages';
 import MessageListener from './components/MessageListener';
 
+
 function App() {
   const { user, loading: authLoading } = useAuth();
   const { hospitals, loading: hospitalsLoading } = useHospitals();
@@ -21,15 +22,19 @@ function App() {
 
   const scrollToAuthForm = () => {
     setShowAuthForm(true);
+    // Pequeño delay para asegurar que el elemento se renderice antes del scroll
     setTimeout(() => {
       const authFormElement = document.getElementById('auth-form-section');
       if (authFormElement) {
-        authFormElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        authFormElement.scrollIntoView({ 
+          behavior: 'smooth',
+          block: 'start'
+        });
       }
     }, 100);
   };
 
-  // Mostrar pantalla de carga mientras se verifica la autenticación
+  // Show loading while checking auth
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -41,7 +46,7 @@ function App() {
     );
   }
 
-  // Mostrar formulario de inicio de sesión si no hay usuario
+  // Show auth form if not logged in
   if (!user) {
     return (
       <div className="min-h-screen">
@@ -55,14 +60,8 @@ function App() {
     );
   }
 
-  // ✅ Solicitar permisos de notificaciones del navegador
-  useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission().then(permission => {
-        console.log('🔔 Permiso de notificaciones:', permission);
-      });
-    }
-  }, []);
+  // Check if user needs to set up hospital
+ 
 
   const renderContent = () => {
     switch (activeTab) {
@@ -78,9 +77,7 @@ function App() {
         return (
           <div className="text-center py-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Transferencias</h2>
-            <p className="text-gray-600">
-              Las transferencias se gestionan a través del sistema de mensajería cuando ambos hospitales están de acuerdo
-            </p>
+            <p className="text-gray-600">Las transferencias se gestionan a través del sistema de mensajería cuando ambos hospitales están de acuerdo</p>
           </div>
         );
       case 'mensajes':
@@ -91,17 +88,18 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 pt-14 sm:pt-16 pb-20 lg:pb-0">
-      <Header />
-      <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
+  <div className="min-h-screen bg-gray-50 pt-14 sm:pt-16 pb-20 lg:pb-0">
+    <Header />
+    <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      <MessageListener /> {/* Escucha global de nuevos mensajes */}
+    <MessageListener /> {/* 👈 AQUI VA */}
 
-      <main className="lg:ml-64 px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-4 lg:pb-8">
-        {renderContent()}
-      </main>
-    </div>
-  );
+    <main className="lg:ml-64 px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-4 lg:pb-8">
+      {renderContent()}
+    </main>
+  </div>
+);S
+
 }
 
 export default App;
