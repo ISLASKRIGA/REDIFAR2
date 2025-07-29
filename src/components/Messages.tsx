@@ -502,11 +502,17 @@ messages.slice().reverse().forEach((msg) => {
                     }`}
                   >
                     <div className="flex items-start space-x-2 sm:space-x-3">
-                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-white shadow-md">
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-white shadow-md flex items-center justify-center">
   <img
     src={`/logos/${hospital.id}.png`}
     alt={hospital.name}
     className="w-full h-full object-contain"
+    onError={(e) => {
+      const fallback = e.currentTarget.closest('div');
+      if (fallback) {
+        fallback.innerHTML = `<div class='w-full h-full flex items-center justify-center text-white font-bold text-sm ${hospitalColor.primary}'>${getHospitalInitials(hospital.name)}</div>`;
+      }
+    }}
   />
 </div>
 
