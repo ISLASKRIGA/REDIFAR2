@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { HeroDemo } from './components/ui/demo';
 import { useAuth } from './hooks/useAuth';
 import { useHospitals } from './hooks/useHospitals';
@@ -59,6 +59,15 @@ function App() {
       </div>
     );
   }
+  // ✅ Solicitar permisos del sistema para mostrar notificaciones
+useEffect(() => {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission().then(permission => {
+      console.log('🔔 Permiso de notificaciones:', permission);
+    });
+  }
+}, []);
+
 
   // Check if user needs to set up hospital
  
