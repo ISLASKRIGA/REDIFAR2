@@ -57,6 +57,19 @@ const checkIsMobile = () => setIsMobile(window.innerWidth < 1024);
   const [unreadCountMap, setUnreadCountMap] = useState<Record<string, number>>({});
 const [lastMessagesMap, setLastMessagesMap] = useState<Record<string, { text: string; timestamp: string }>>({});
 
+// 🔁 Escuchar y cargar últimos mensajes desde localStorage
+useEffect(() => {
+  const updateLastMessages = () => {
+    const stored = localStorage.getItem('lastMessages');
+    if (stored) {
+      setLastMessagesMap(JSON.parse(stored));
+    }
+  };
+
+  updateLastMessages();
+  window.addEventListener('lastMessagesUpdated', updateLastMessages);
+  return () => window.removeEventListener('lastMessagesUpdated', updateLastMessages);
+}, []);
 
 useEffect(() => {
   const loadOrder = () => {
