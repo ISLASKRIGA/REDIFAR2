@@ -415,18 +415,7 @@ tempLastMessagesMap[partnerId] = lastMessage.content;
     );
   }
   // Diccionario con el último mensaje por hospital
-const tempLastMessagesMap: { [hospitalId: string]: string } = {};
 
-messages.slice().reverse().forEach((msg) => {
-  const otherId =
-    msg.sender_hospital_id === currentHospital?.id
-      ? msg.recipient_hospital_id
-      : msg.sender_hospital_id;
-
-  if (!tempLastMessagesMap[otherId]) {
-    tempLastMessagesMap[otherId] = msg.content;
-  }
-});
 
 
   return (
