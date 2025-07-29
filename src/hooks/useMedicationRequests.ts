@@ -64,9 +64,7 @@ export const useMedicationRequests = () => {
   }
 };
 
-    }
-  };
-
+    
   const updateRequest = async (id: string, updates: Database['public']['Tables']['medication_requests']['Update']) => {
     try {
       const { data, error } = await supabase
