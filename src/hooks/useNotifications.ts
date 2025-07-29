@@ -101,7 +101,9 @@ export const useNotifications = () => {
       }
 
       if (data) {
-        const formattedNotifications = data.map(item => ({
+   const readIds = JSON.parse(localStorage.getItem('readNotificationIds') || '[]');
+
+const formattedNotifications = data.map(item => ({
   id: item.id,
   type: item.type as 'request' | 'offer',
   title: item.title,
@@ -111,7 +113,9 @@ export const useNotifications = () => {
   urgency: item.urgency,
   timestamp: item.created_at,
   relatedId: item.related_id,
-  isRead: false // 👈 Marca como no leído cuando se refrescan desde DB
+  isRead: readIds.includes(item.id) // ✅ Solo es false si no ha sido leída
+}));
+
 }));
 
         
