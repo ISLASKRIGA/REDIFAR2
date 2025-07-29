@@ -160,7 +160,6 @@ setLastMessagesMap((prev) => {
   return updated;
 });
 
-tempLastMessagesMap[partnerId] = lastMessage.content;
 
   // ✅ SOLO SI ES UN MENSAJE RECIBIDO DE OTRA CONVERSACIÓN
   if (
