@@ -72,7 +72,8 @@ export const useNotifications = () => {
   if (!user) return;
   setNotifications(prev => prev.map(n => ({ ...n, isRead: true })));
   setLastUpdate(Date.now());
-}, []);
+}, [user]);
+
 
 
   // Force refresh notifications from database
