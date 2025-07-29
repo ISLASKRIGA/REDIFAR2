@@ -50,4 +50,56 @@ function App() {
     );
   }
 
-  // Mostrar formulario de login si no
+  // Mostrar formulario de login si no hay usuario autenticado
+  if (!user) {
+    return (
+      <div className="min-h-screen">
+        <HeroDemo onLoginClick={scrollToAuthForm} />
+        {showAuthForm && (
+          <div id="auth-form-section" className="min-h-screen bg-gray-50 py-12">
+            <AuthForm onSuccess={() => setShowAuthForm(false)} />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const renderContent = () => {
+    switch (activeTab) {
+      case 'dashboard':
+        return <Dashboard onNavigate={setActiveTab} />;
+      case 'hospitales':
+        return <HospitalNetwork />;
+      case 'solicitudes':
+        return <MedicationRequests onNavigate={setActiveTab} />;
+      case 'insumos-disponibles':
+        return <MedicationOffers onNavigate={setActiveTab} />;
+      case 'transferencias':
+        return (
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-bold text-gray-900 mb-4">Transferencias</h2>
+            <p className="text-gray-600">
+              Las transferencias se gestionan a través del sistema de mensajería cuando ambos hospitales están de acuerdo
+            </p>
+          </div>
+        );
+      case 'mensajes':
+        return <Messages />;
+      default:
+        return <Dashboard onNavigate={setActiveTab} />;
+    }
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50 pt-14 sm:pt-16 pb-20 lg:pb-0">
+      <Header />
+      <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
+      <MessageListener /> {/* Escucha global de nuevos mensajes */}
+      <main className="lg:ml-64 px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-4 lg:pb-8">
+        {renderContent()}
+      </main>
+    </div>
+  );
+}
+
+export default App;
