@@ -507,9 +507,10 @@ messages.slice().reverse().forEach((msg) => {
                             <h3 className="text-sm sm:text-base font-semibold text-gray-900 truncate">
                               {hospital.name}
                             </h3>
-                            <p className="text-xs text-gray-600 truncate mt-0.5 font-medium">
+                           <p className="text-xs text-gray-600 truncate mt-0.5 font-medium">
   {tempLastMessagesMap[hospital.id] || ''}
 </p>
+
 
                             <p className="text-xs text-gray-400 mt-1 hidden lg:block">
                               {hospital.city}, {hospital.state}
