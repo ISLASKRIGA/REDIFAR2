@@ -57,7 +57,6 @@ const checkIsMobile = () => setIsMobile(window.innerWidth < 1024);
   const [unreadCountMap, setUnreadCountMap] = useState<Record<string, number>>({});
 const [lastMessagesMap, setLastMessagesMap] = useState<Record<string, { text: string; timestamp: string }>>({});
 
-  const [lastMessagesMap, setLastMessagesMap] = useState<Record<string, Message>>({});
 
 useEffect(() => {
   const loadOrder = () => {
