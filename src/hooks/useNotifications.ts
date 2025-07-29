@@ -114,7 +114,7 @@ export const useNotifications = () => {
   isRead: false // 👈 Marca como no leído cuando se refrescan desde DB
 }));
 
-        e
+        
         setNotifications(formattedNotifications);
         setLastUpdate(Date.now());
       }
