@@ -41,7 +41,10 @@ const MessageListener = () => {
       window.dispatchEvent(new Event("unreadMessagesUpdated"));
 
       // 🔔 Mostrar pop-up si no estás en la sección de mensajes
-      if (document.visibilityState === 'visible' && window.location.pathname !== '/mensajes') {
+      // ... (importaciones y lógica previa iguales)
+
+      // 🔔 Mostrar pop-up si la pestaña está activa (sin importar ruta)
+      if (document.visibilityState === 'visible') {
         const notification = document.createElement('div');
         notification.innerText = `📩 Nuevo mensaje recibido`;
         notification.style.cssText = `
@@ -62,6 +65,7 @@ const MessageListener = () => {
           document.body.removeChild(notification);
         }, 4000);
       }
+
     };
 
     const channel = supabase
