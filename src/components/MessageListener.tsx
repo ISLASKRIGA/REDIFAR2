@@ -42,7 +42,7 @@ const MessageListener = () => {
       localStorage.setItem('conversationOrder', JSON.stringify(updated));
 
       window.dispatchEvent(new Event('conversationOrderUpdated'));
-    };D
+    };
 
     channel.on('postgres_changes', {
       event: 'INSERT',
