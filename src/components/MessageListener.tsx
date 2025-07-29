@@ -25,6 +25,16 @@ const MessageListener = () => {
       if (!isIncoming) return;
 
       const otherHospitalId = newMessage.sender_hospital_id;
+// 📝 Guardar último mensaje (entrada o salida) en localStorage
+const lastMessages = JSON.parse(localStorage.getItem("lastMessages") || "{}");
+lastMessages[otherHospitalId] = {
+  text: newMessage.text,
+  timestamp: newMessage.created_at
+};
+localStorage.setItem("lastMessages", JSON.stringify(lastMessages));
+
+// 🔄 Notificar a la UI que hubo actualización
+window.dispatchEvent(new Event("lastMessagesUpdated"));
 
       console.log('📩 Mensaje entrante recibido de:', otherHospitalId);
 
