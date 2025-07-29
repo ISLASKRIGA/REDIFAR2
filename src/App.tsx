@@ -34,7 +34,7 @@ function App() {
       const authFormElement = document.getElementById('auth-form-section');
       if (authFormElement) {
         authFormElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
-      }S
+      }
     }, 100);
   };
 
