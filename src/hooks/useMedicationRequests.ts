@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useNotifications } from './useNotifications'; // 👈 asegúrate de que la ruta sea correcta
 import { supabase } from '../lib/supabase';
 import { Database } from '../lib/supabase';
 
@@ -43,20 +44,26 @@ export const useMedicationRequests = () => {
     fetchRequests();
   }, []);
 
-  const createRequest = async (requestData: Database['public']['Tables']['medication_requests']['Insert']) => {
-    try {
-      const { data, error } = await supabase
-        .from('medication_requests')
-        .insert([requestData])
-        .select()
-        .single();
+ const createRequest = async (requestData: Database['public']['Tables']['medication_requests']['Insert']) => {
+  try {
+    const { data, error } = await supabase
+      .from('medication_requests')
+      .insert([requestData])
+      .select()
+      .single();
 
-      if (error) throw error;
+    if (error) throw error;
 
-      setTimeout(fetchRequests, 500);
-      return { data, error: null };
-    } catch (err) {
-      return { data: null, error: err instanceof Error ? err.message : 'Error creating request' };
+    const { refreshNotifications } = useNotifications(); // 👈
+    refreshNotifications(); // 👈 actualiza notificaciones
+
+    setTimeout(fetchRequests, 500);
+    return { data, error: null };
+  } catch (err) {
+    return { data: null, error: err instanceof Error ? err.message : 'Error creating request' };
+  }
+};
+
     }
   };
 
