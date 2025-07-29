@@ -105,7 +105,7 @@ export const useNotifications = () => {
         setNotifications(formattedNotifications);
         setLastUpdate(Date.now());
       }
-    } catch (error) {s
+    } catch (error) {
       console.error('Network error refreshing notifications:', error);
     }
   }, [user]);
