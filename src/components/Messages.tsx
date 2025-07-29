@@ -55,8 +55,21 @@ const checkIsMobile = () => setIsMobile(window.innerWidth < 1024);
   const [hospitalLastMessageMap, setHospitalLastMessageMap] = useState<Record<string, string>>({});
   const [unreadMap, setUnreadMap] = useState<Record<string, boolean>>({});
   const [unreadCountMap, setUnreadCountMap] = useState<Record<string, number>>({});
+const [lastMessagesMap, setLastMessagesMap] = useState<Record<string, { text: string; timestamp: string }>>({});
 
-  const [lastMessagesMap, setLastMessagesMap] = useState<Record<string, Message>>({});
+// 🔁 Escuchar y cargar últimos mensajes desde localStorage
+useEffect(() => {
+  const updateLastMessages = () => {
+    const stored = localStorage.getItem('lastMessages');
+    if (stored) {
+      setLastMessagesMap(JSON.parse(stored));
+    }
+  };
+
+  updateLastMessages();
+  window.addEventListener('lastMessagesUpdated', updateLastMessages);
+  return () => window.removeEventListener('lastMessagesUpdated', updateLastMessages);
+}, []);
 
 useEffect(() => {
   const loadOrder = () => {
@@ -126,13 +139,27 @@ useEffect(() => {
 
   const lastMessage = messages[messages.length - 1];
 
-  if (!lastMessage || lastMessage.id === lastProcessedMessageId) return;
+if (!lastMessage || lastMessage.id === lastProcessedMessageId) return;
 
-  const partnerId =
-    lastMessage.sender_hospital_id === currentHospital.id
-      ? lastMessage.recipient_hospital_id
-      : lastMessage.sender_hospital_id;
-tempLastMessagesMap[partnerId] = lastMessage.content;
+const partnerId =
+  lastMessage.sender_hospital_id === currentHospital.id
+    ? lastMessage.recipient_hospital_id
+    : lastMessage.sender_hospital_id;
+
+// ✅ Guardar en localStorage y actualizar estado
+setLastMessagesMap((prev) => {
+  const updated = {
+    ...prev,
+    [partnerId]: {
+      text: lastMessage.content,
+      timestamp: lastMessage.created_at,
+    },
+  };
+  localStorage.setItem('lastMessages', JSON.stringify(updated));
+  window.dispatchEvent(new Event('lastMessagesUpdated'));
+  return updated;
+});
+
 
   // ✅ SOLO SI ES UN MENSAJE RECIBIDO DE OTRA CONVERSACIÓN
   if (
@@ -475,9 +502,20 @@ messages.slice().reverse().forEach((msg) => {
                     }`}
                   >
                     <div className="flex items-start space-x-2 sm:space-x-3">
-                      <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-full flex items-center justify-center text-white font-bold text-sm ${hospitalColor.primary} shadow-md`}>
-                        {getHospitalInitials(hospital.name)}
-                      </div>
+                      <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full overflow-hidden bg-white shadow-md flex items-center justify-center">
+  <img
+    src={`/logos/${hospital.id}.png`}
+    alt={hospital.name}
+    className="w-full h-full object-contain"
+    onError={(e) => {
+      const fallback = e.currentTarget.closest('div');
+      if (fallback) {
+        fallback.innerHTML = `<div class='w-full h-full flex items-center justify-center text-white font-bold text-sm ${hospitalColor.primary}'>${getHospitalInitials(hospital.name)}</div>`;
+      }
+    }}
+  />
+</div>
+
                       {unreadCountMap[hospital.id] > 0 && (
   <div
     className={`ml-auto mt-1 text-white text-xs font-bold rounded-full px-2 py-0.5 shadow-md ${hospitalColor.primary}`}
@@ -494,9 +532,11 @@ messages.slice().reverse().forEach((msg) => {
                             <h3 className="text-sm sm:text-base font-semibold text-gray-900 truncate">
                               {hospital.name}
                             </h3>
-                            <p className="text-xs text-gray-600 truncate mt-0.5 font-medium">
-  {tempLastMessagesMap[hospital.id] || ''}
+                        <p className="text-xs text-gray-600 truncate mt-0.5 font-medium">
+  {lastMessagesMap[hospital.id]?.text || 'Sin mensajes'}
 </p>
+
+
 
                             <p className="text-xs text-gray-400 mt-1 hidden lg:block">
                               {hospital.city}, {hospital.state}
