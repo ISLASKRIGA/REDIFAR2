@@ -25,6 +25,8 @@ export const useMessages = (selectedHospitalId: string | null) => {
   const [loading, setLoading] = useState(true);
   const [messagesLoading, setMessagesLoading] = useState(false);
   const [currentHospital, setCurrentHospital] = useState<any>(null);
+  const [unreadCountMap, setUnreadCountMap] = useState<Record<string, number>>({});
+
   const addOptimisticMessage = (tempMessage: Message) => {
   setMessages(prev => [...prev, tempMessage]);
 };
@@ -213,7 +215,36 @@ export const useMessages = (selectedHospitalId: string | null) => {
   const markAsRead = async () => {
     // Opcional, no implementado aún
   };
+// Recuento de mensajes no leídos por hospital
+useEffect(() => {
+  if (!currentHospital?.id) return;
 
+  const fetchUnreadCounts = async () => {
+    const { data, error } = await supabase
+      .from('mensajes')
+      .select('sender_hospital_id', { count: 'exact', head: false })
+      .eq('recipient_hospital_id', currentHospital.id)
+      .is('read_at', null);
+
+    if (error) {
+      console.error('Error fetching unread counts:', error);
+      return;
+    }
+
+    // Agrupar por hospital
+    const countMap: Record<string, number> = {};
+    for (const msg of data) {
+      const senderId = msg.sender_hospital_id;
+      countMap[senderId] = (countMap[senderId] || 0) + 1;
+    }
+
+    setUnreadCountMap(countMap);
+  };
+
+  fetchUnreadCounts();
+}, [currentHospital?.id, messages]);
+
+  
   return {
     messages,
     conversations: [],
@@ -225,5 +256,7 @@ export const useMessages = (selectedHospitalId: string | null) => {
     fetchMessages,
     fetchConversations: () => {},
     currentHospital,
+    unreadCountMap,
+
   };
 };

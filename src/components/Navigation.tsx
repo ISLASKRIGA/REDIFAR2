@@ -3,6 +3,10 @@ import { Home, Building2, Search, Plus, ArrowRightLeft, MessageCircle, Menu, X }
 import { useAuth } from '../hooks/useAuth';
 import { useHospitals } from '../hooks/useHospitals';
 import { useHospitalColor } from '../hooks/useHospitalColor';
+import { useUnreadMessages } from '../hooks/useUnreadMessages';
+
+import { useMessages } from '../hooks/useMessages';
+
 
 interface NavigationProps {
   activeTab: string;
@@ -13,6 +17,8 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab 
   const { user } = useAuth();
   const { hospitals } = useHospitals();
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const { totalUnread } = useUnreadMessages();
+
   const userHospital = hospitals.find(h => h.user_id === user?.id);
   const hospitalColor = useHospitalColor(userHospital?.id);
 
@@ -73,9 +79,15 @@ export const Navigation: React.FC<NavigationProps> = ({ activeTab, setActiveTab 
                     : 'text-gray-500'
                 }`}
               >
-                <div className={`p-1 rounded-lg ${isActive ? hospitalColor.light : ''}`}>
-                  <Icon className={`w-5 h-5 ${isActive ? 'animate-pulse' : ''}`} />
-                </div>
+               <div className="relative p-1 rounded-lg">
+  <Icon className={`w-5 h-5 ${isActive ? 'animate-pulse' : ''}`} />
+  {tab.id === 'mensajes' && totalUnread > 0 && (
+    <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center font-bold shadow">
+      {totalUnread > 9 ? '9+' : totalUnread}
+    </span>
+  )}
+</div>
+
                 <span className={`text-xs mt-1 font-medium truncate max-w-full ${
                   isActive ? 'font-semibold' : ''
                 }`}>
