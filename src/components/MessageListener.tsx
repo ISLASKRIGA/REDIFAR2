@@ -65,6 +65,12 @@ const MessageListener = () => {
           document.body.removeChild(notification);
         }, 4000);
       }
+if ('Notification' in window && Notification.permission === 'granted') {
+  new Notification('📩 Nuevo mensaje recibido', {
+    body: 'Has recibido un nuevo mensaje de otro hospital.',
+    icon: '/logo.png', // Asegúrate de tener este ícono en /public
+  });
+}
 
     };
 
