@@ -167,16 +167,18 @@ export const useNotifications = () => {
       table: 'medication_offers'
     }, payload => {
       const item = payload.new;
-      addNotification({
-        id: item.id,
-        type: 'offer',
-        title: 'Nuevo insumo disponible',
-        message: `${item.medication_name} ofrecido por ${item.hospital_name}`,
-        hospitalName: item.hospital_name,
-        medicationName: item.medication_name,
-        timestamp: item.created_at,
-        relatedId: item.id
-      });
+     addNotification({
+  id: item.id,
+  type: 'offer',
+  title: 'Nuevo insumo disponible',
+  message: `${item.medication_name} ofrecido por ${item.hospital_name}`,
+  hospitalName: item.hospital_name,
+  medicationName: item.medication_name,
+  timestamp: item.created_at,
+  relatedId: item.id,
+  isRead: false // 👈 Esto es lo que faltaba
+});
+
     });
 
     channel.subscribe();
