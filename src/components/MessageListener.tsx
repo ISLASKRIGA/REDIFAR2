@@ -20,18 +20,13 @@ const MessageListener = () => {
     const handler = (payload: any) => {
       const newMessage = payload.new;
 
-      const isRelevant =
-        newMessage.sender_hospital_id === currentHospital.id ||
-        newMessage.recipient_hospital_id === currentHospital.id;
+      // ✅ Solo si tu hospital RECIBE el mensaje
+      const isIncoming = newMessage.recipient_hospital_id === currentHospital.id;
+      if (!isIncoming) return;
 
-      if (!isRelevant) return;
+      const otherHospitalId = newMessage.sender_hospital_id;
 
-      const otherHospitalId =
-        newMessage.sender_hospital_id === currentHospital.id
-          ? newMessage.recipient_hospital_id
-          : newMessage.sender_hospital_id;
-
-      console.log('🔔 Nuevo mensaje relevante:', newMessage);
+      console.log('📩 Mensaje entrante recibido de:', otherHospitalId);
 
       // Actualizar el orden de conversaciones
       const stored = JSON.parse(localStorage.getItem('conversationOrder') || '[]');
