@@ -90,10 +90,11 @@ export const NotificationCenter: React.FC = () => {
   return (
     <div className="relative">
       <button
-  onClick={() => {
-    setIsOpen(!isOpen);
-    if (!isOpen) markAsRead(); // Reinicia contador al abrir
-  }}
+ onClick={() => {
+  setIsOpen(!isOpen);
+  if (!isOpen) markAsRead(); // ✅ Esto reinicia el contador
+}}
+
 
         className={`relative p-2 sm:p-3 rounded-full transition-all duration-300 transform hover:scale-110 border-2 border-white/30 ${
           unreadCount > 0 
