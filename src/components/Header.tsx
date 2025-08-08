@@ -31,7 +31,7 @@ export const Header: React.FC = () => {
               <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
             </div>
             <div>
-              <h1 className="text-lg sm:text-xl font-bold text-white">REDIFAR</h1>
+              <h1 className="text-lg sm:text-xl font-bold text-white">RETMI</h1>
               {userHospital && (
                 <p className="text-xs sm:text-sm text-white/90 font-medium hidden sm:block">
                   {userHospital.name}
