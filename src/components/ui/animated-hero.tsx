@@ -87,8 +87,7 @@ function Hero({ onLoginClick }: HeroProps) {
             </h1>
 
             <p className="text-lg md:text-xl leading-relaxed tracking-tight text-muted-foreground max-w-2xl text-center">
-              Innovación Colaborativa para el Intercambio y Distribución Responsable de Medicamentos en el Sistema de Salud Mexicano.
-            </p>
+Innovación Colaborativa para el Intercambio y Distribucipon Responsable de medicamentos en el Sistema de Salud Mexicano           </p>
           </div>
           <div className="flex flex-row gap-3">
             <Button size="lg" className="gap-4" variant="outline">

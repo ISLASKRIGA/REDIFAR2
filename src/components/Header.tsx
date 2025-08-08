@@ -27,11 +27,17 @@ export const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16">
           <div className="flex items-center">
-            <div className="p-2 rounded-full bg-white/20 mr-3">
-              <Activity className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
-            </div>
+           <div className="p-2 rounded-full bg-white/20 mr-3 flex items-center justify-center overflow-hidden ring-1 ring-white/30 backdrop-blur-sm">
+  <img
+    src="/logos/LogoRETMI.png"
+    alt="RETMI Logo"
+    className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
+  />
+</div>
+
+
             <div>
-              <h1 className="text-lg sm:text-xl font-bold text-white">REDIFAR</h1>
+              <h1 className="text-lg sm:text-xl font-bold text-white">RETMI</h1>
               {userHospital && (
                 <p className="text-xs sm:text-sm text-white/90 font-medium hidden sm:block">
                   {userHospital.name}
