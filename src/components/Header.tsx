@@ -29,7 +29,7 @@ export const Header: React.FC = () => {
           <div className="flex items-center">
            <div className="p-2 rounded-full bg-white/20 mr-3 flex items-center justify-center overflow-hidden ring-1 ring-white/30 backdrop-blur-sm">
  <img
-  src="/logos/LogoRETMI.png"
+  src="/logos/LogoRETMI_SFond.png"
   alt="RETMI Logo"
   className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
 />
