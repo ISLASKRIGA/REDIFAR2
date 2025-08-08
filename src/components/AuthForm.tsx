@@ -43,10 +43,13 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
-              <div className="bg-blue-600 p-3 rounded-full">
-                <Activity className="w-8 h-8 text-white" />
-              </div>
-            </div>
+  <img
+    src="/logos/LogoRETMI.png"
+    alt="RETMI Logo"
+    className="w-20 h-20 object-contain"
+  />
+</div>
+
             <h1 className="text-2xl font-bold text-gray-900 mb-2">RETMI</h1>
             <p className="text-gray-600">
               {isLogin ? 'Red de Traspaso de Medicamentos e Insumos' : 'Crea tu cuenta hospitalaria'}
