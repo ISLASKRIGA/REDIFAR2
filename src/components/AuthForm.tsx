@@ -47,7 +47,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
                 <Activity className="w-8 h-8 text-white" />
               </div>
             </div>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">REDIFAR</h1>
+            <h1 className="text-2xl font-bold text-gray-900 mb-2">RETMI</h1>
             <p className="text-gray-600">
               {isLogin ? 'Red de intercambio Hospitalario' : 'Crea tu cuenta hospitalaria'}
             </p>
