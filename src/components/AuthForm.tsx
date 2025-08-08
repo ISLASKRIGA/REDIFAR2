@@ -49,7 +49,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">RETMI</h1>
             <p className="text-gray-600">
-              {isLogin ? 'Red de intercambio Hospitalario' : 'Crea tu cuenta hospitalaria'}
+              {isLogin ? 'Red de Traspaso de Medicamentos e Insumos' : 'Crea tu cuenta hospitalaria'}
             </p>
           </div>
 
