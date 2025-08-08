@@ -43,7 +43,7 @@ export const AuthForm: React.FC<AuthFormProps> = ({ onSuccess }) => {
         <div className="bg-white rounded-2xl shadow-xl p-8">
           <div className="text-center mb-8">
             <div className="flex items-center justify-center mb-4">
-  <img src="/public/logos/LogoRETMI.png" alt="RETMI Logo" className="w-20 h-20 object-contain" />
+  <img src="/logos/LogoRETMI.png" alt="RETMI Logo" className="w-20 h-20 object-contain" />
 </div>
 
 
