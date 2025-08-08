@@ -27,12 +27,13 @@ export const Header: React.FC = () => {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16">
           <div className="flex items-center">
-           <div className="p-2 rounded-full bg-white/20 mr-3 flex items-center justify-center overflow-hidden ring-1 ring-white/30 backdrop-blur-sm">
-  <img
-    src="/logos/LogoRETMI.png"
-    alt="RETMI Logo"
-    className="w-5 h-5 sm:w-6 sm:h-6 object-contain"
-  />
+           <div className="p-0.5 rounded-full bg-white/20 mr-3 flex items-center justify-center overflow-hidden ring-1 ring-white/30 backdrop-blur-sm">
+ <img
+  src="/logos/LogoRETMI_SFond.png"
+  alt="RETMI Logo"
+  className="w-8 h-8 sm:w-10 sm:h-10 object-contain"
+/>
+
 </div>
 
 
@@ -48,6 +49,17 @@ export const Header: React.FC = () => {
 
           <div className="flex items-center space-x-2 sm:space-x-4">
             <NotificationCenter />
+{/* 🏥 Logo del hospital (solo móvil) */}
+<div className="flex sm:hidden items-center border-r border-white/30 pr-2 mr-1">
+  <div className="w-7 h-7 bg-white rounded-full overflow-hidden flex items-center justify-center">
+    <img
+      src={`/logos/${userHospital?.id || 'default'}.png`}
+      alt="Logo hospital"
+      className="w-full h-full object-contain"
+      onError={(e) => { e.currentTarget.src = '/logos/default.png'; }}
+    />
+  </div>
+</div>
 
             {/* 🏥 Logo del hospital */}
             <div className="hidden sm:flex items-center space-x-3 border-r border-white/30 pr-4">
