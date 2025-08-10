@@ -40,7 +40,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     })),
     ...offers.slice(0, 3).map(offer => ({
       type: 'offer' as const,
-      message: `Nueva oferta de ${offer.medications?.name || 'medicamento'}`,
+message: `Nueva oferta de ${offer.medication_name || 'medicamento'}`,
       hospital: offer.hospitals?.name || 'Hospital',
       time: new Date(offer.created_at).toLocaleString(),
       urgent: false,
