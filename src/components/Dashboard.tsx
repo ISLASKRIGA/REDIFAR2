@@ -50,15 +50,21 @@ message: `Nueva oferta de ${offer.medication_name || 'medicamento'}`,
 
   // Get most requested medications
   const medicationCounts = requests.reduce((acc, request) => {
-    const medName = request.medications?.name || 'Desconocido';
-    acc[medName] = (acc[medName] || 0) + 1;
+   const medName = (request.medication_name ?? '').trim() || 'Desconocido';
+const key = medName.toLowerCase();
+
+acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
   const mostRequested = Object.entries(medicationCounts)
     .sort(([,a], [,b]) => b - a)
     .slice(0, 5)
-    .map(([name, count]) => ({ name, requests: count }));
+    .map(([name, count]) => ({
+  name: name.charAt(0).toUpperCase() + name.slice(1),
+  requests: count
+}));
+
 
   const stats = [
     { 
