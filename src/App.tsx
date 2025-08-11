@@ -101,9 +101,11 @@ const isMobile = typeof window !== 'undefined'
       case 'hospitales':
         return <HospitalNetwork />;
       case 'solicitudes':
-        return <MedicationRequests onNavigate={setActiveTab} />;
+  return <MedicationRequests onNavigate={goTo} />;
+
       case 'insumos-disponibles':
-        return <MedicationOffers onNavigate={setActiveTab} />;
+  return <MedicationOffers onNavigate={setActiveTab} />;
+
       case 'transferencias':
         const swipeBind = useSwipeNavigation({
   onSwipeLeft: goNextTab,
@@ -132,8 +134,11 @@ const isMobile = typeof window !== 'undefined'
       <Header />
       <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
       <MessageListener /> {/* Escucha global de nuevos mensajes */}
-      <main className="lg:ml-64 px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-4 lg:pb-8">
-        {renderContent()}
+      <main
+  className="lg:ml-64 px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-4 lg:pb-8 touch-pan-y"
+  {...swipeBind}
+>
+
       </main>
     </div>
   );
