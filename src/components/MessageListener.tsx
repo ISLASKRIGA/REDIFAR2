@@ -30,7 +30,7 @@ const MessageListener = () => {
 // 📝 Guardar último mensaje (entrada o salida) en localStorage
 const lastMessages = JSON.parse(localStorage.getItem("lastMessages") || "{}");
 lastMessages[otherHospitalId] = {
-  text: newMessage.text,
+  text: newMessage.content,          // ← el campo correcto en tu tabla
   timestamp: newMessage.created_at
 };
 localStorage.setItem("lastMessages", JSON.stringify(lastMessages));
