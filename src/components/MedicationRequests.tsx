@@ -349,6 +349,9 @@ medication_name: formData.medicationName, // ✅ Correcto
   className="bg-teal-600 text-white px-2 sm:px-3 py-1 rounded-md hover:bg-teal-700 transition-colors text-xs"
 >
 
+                        <span className="sm:hidden">Resp.</span>
+                        <span className="hidden sm:inline">Responder</span>
+                      </button>
                     </td>
                   </tr>
                 ))}
