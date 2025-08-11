@@ -324,13 +324,31 @@ medication_name: formData.medicationName, // ✅ Correcto
                       <div className="text-xs sm:text-sm text-gray-900">{request.contact_person}</div>
                     </td>
                     <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-right text-xs sm:text-sm font-medium">
-                      <button 
-                        onClick={() => handleContactHospital(request.hospitals?.id, request.hospitals?.name, `Solicitud: ${request.medication_name}`)}
-                        className="bg-teal-600 text-white px-2 sm:px-3 py-1 rounded-md hover:bg-teal-700 transition-colors text-xs"
-                      >
-                        <span className="sm:hidden">Resp.</span>
-                        <span className="hidden sm:inline">Responder</span>
-                      </button>
+                     <button
+  onClick={() => {
+    const med = request.medication_name || 'medicamento';
+    const qty = request.quantity ? `${request.quantity} ${request.unit || ''}` : '';
+    const hospName = request.hospitals?.name || 'su hospital';
+    const ref  = (typeof request.id === 'string' && request.id.slice) ? request.id.slice(0, 8) : String(request.id || '');
+    const draft = [
+      `👋 Hola ${hospName},`,
+      `Sobre su solicitud de ${med}${qty ? ` (${qty})` : ''}${ref ? ` [ref: ${ref}]` : ''}.`,
+      ``,
+      `✔️ Disponibilidad: [indicar]`,
+      `🚚 Entrega/Recogida: [indicar]`,
+      `📍 Ubicación: [indicar]`,
+      `☎️ Contacto: [indicar]`,
+      ``,
+      `¿Les funciona esta opción?`
+    ].join('\n');
+
+    setMessageDraft(draft);
+    if (request.hospitals?.id) setMessageTarget(String(request.hospitals.id));
+    onNavigate('mensajes');
+  }}
+  className="bg-teal-600 text-white px-2 sm:px-3 py-1 rounded-md hover:bg-teal-700 transition-colors text-xs"
+>
+
                     </td>
                   </tr>
                 ))}
