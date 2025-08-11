@@ -97,7 +97,6 @@ useEffect(() => {
   };
 }, []);
 
-  }, []);
 
   const scrollToAuthForm = () => {
     setShowAuthForm(true);
