@@ -20,6 +20,33 @@ function App() {
   const { hospitals, loading: hospitalsLoading } = useHospitals();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showAuthForm, setShowAuthForm] = useState(false);
+  const tabsOrder: Array<'dashboard' | 'solicitudes' | 'ofertas' | 'insumos-disponibles' | 'hospitales' | 'transferencias' | 'mensajes'> = [
+  'dashboard',
+  'solicitudes',
+  'ofertas',
+  'insumos-disponibles',
+  'hospitales',
+  'transferencias',
+  'mensajes',
+];
+
+const goTo = (tab: typeof tabsOrder[number]) => setActiveTab(tab);
+
+const goNextTab = () => {
+  const i = tabsOrder.indexOf(activeTab as typeof tabsOrder[number]);
+  if (i < tabsOrder.length - 1) goTo(tabsOrder[i + 1]);
+};
+
+const goPrevTab = () => {
+  const i = tabsOrder.indexOf(activeTab as typeof tabsOrder[number]);
+  if (i > 0) goTo(tabsOrder[i - 1]);
+};
+
+// Habilitar sólo en pantallas pequeñas (<= 640px)
+const isMobile = typeof window !== 'undefined'
+  ? window.matchMedia('(max-width: 640px)').matches
+  : false;
+
 
   // ✅ Solicitar permisos de notificaciones del navegador
   useEffect(() => {
