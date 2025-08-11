@@ -14,6 +14,8 @@ import { MedicationOffers } from './components/MedicationOffers';
 import { HospitalNetwork } from './components/HospitalNetwork';
 import { Messages } from './components/Messages';
 import MessageListener from './components/MessageListener';
+import { initNewMessageSound, unlockNewMessageSound } from './utils/newMessageAlert';
+
 
 function App() {
   const { user, loading: authLoading } = useAuth();
