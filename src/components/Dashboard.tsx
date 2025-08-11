@@ -61,7 +61,11 @@ message: `Nueva oferta de ${offer.medication_name || 'medicamento'}`,
   const mostRequested = Object.entries(medicationCounts)
     .sort(([,a], [,b]) => b - a)
     .slice(0, 5)
-    .map(([name, count]) => ({ name, requests: count }));
+   .map(([key, count]) => ({
+  name: key === 'desconocido' ? 'Desconocido' : key.charAt(0).toUpperCase() + key.slice(1),
+  requests: count
+}));
+
 
   const stats = [
     { 
