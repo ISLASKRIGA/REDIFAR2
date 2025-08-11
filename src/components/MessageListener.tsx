@@ -2,6 +2,8 @@ import { useEffect, useMemo } from 'react';
 import { supabase } from '../lib/supabase';
 import { useHospitals } from '../hooks/useHospitals';
 import { useAuth } from '../hooks/useAuth';
+import { alertNewMessage } from '../utils/newMessageAlert';
+
 
 const MessageListener = () => {
   const { user } = useAuth();
