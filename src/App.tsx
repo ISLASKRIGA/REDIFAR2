@@ -180,7 +180,7 @@ const goTo = (tab: typeof tabsOrder[number]) => {
   }),
 }}
 
-transition={{ type: 'spring', stiffness: 380, damping: 34, mass: 0.22 }}
+transition={{ duration: 0.28, ease: 'easeOut' }}
         className="w-full"
       >
         {renderContent()}
