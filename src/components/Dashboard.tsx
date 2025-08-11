@@ -31,7 +31,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const recentActivity = [
     ...requests.slice(0, 3).map(request => ({
       type: 'request' as const,
-      message: `Nueva solicitud de ${request.medications?.name || 'medicamento'}`,
+      message: `Nueva solicitud de ${request.medication_name || 'medicamento'}`,
+
       hospital: request.hospitals?.name || 'Hospital',
       time: new Date(request.created_at).toLocaleString(),
       urgent: request.urgency === 'critical' || request.urgency === 'high',
@@ -39,7 +40,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     })),
     ...offers.slice(0, 3).map(offer => ({
       type: 'offer' as const,
-      message: `Nueva oferta de ${offer.medications?.name || 'medicamento'}`,
+message: `Nueva oferta de ${offer.medication_name || 'medicamento'}`,
       hospital: offer.hospitals?.name || 'Hospital',
       time: new Date(offer.created_at).toLocaleString(),
       urgent: false,
@@ -49,15 +50,21 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
 
   // Get most requested medications
   const medicationCounts = requests.reduce((acc, request) => {
-    const medName = request.medications?.name || 'Desconocido';
-    acc[medName] = (acc[medName] || 0) + 1;
+   const medName = (request.medication_name ?? '').trim() || 'Desconocido';
+const key = medName.toLowerCase();
+
+acc[key] = (acc[key] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
 
   const mostRequested = Object.entries(medicationCounts)
     .sort(([,a], [,b]) => b - a)
     .slice(0, 5)
-    .map(([name, count]) => ({ name, requests: count }));
+    .map(([name, count]) => ({
+  name: name.charAt(0).toUpperCase() + name.slice(1),
+  requests: count
+}));
+
 
   const stats = [
     { 
