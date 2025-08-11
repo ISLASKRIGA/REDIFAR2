@@ -26,7 +26,7 @@ export const Header: React.FC = () => {
     <header className={`${hospitalColor.primary} shadow-lg border-b-4 ${hospitalColor.border} fixed top-0 left-0 right-0 z-40`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16">
-          {/* Lado izquierdo: logo + RETMI + nombre (sin campana) */}
+          {/* Lado izquierdo: logo + RETMI + nombre */}
           <div className="flex items-center">
             <div className="p-0.5 rounded-full bg-white/20 mr-3 flex items-center justify-center overflow-hidden ring-1 ring-white/30 backdrop-blur-sm">
               <img
@@ -48,8 +48,8 @@ export const Header: React.FC = () => {
 
           {/* Lado derecho */}
           <div className="flex items-center space-x-2 sm:space-x-4">
-            {/* 🏥 Logo del hospital (solo móvil) */}
-            <div className="flex sm:hidden items-center border-r border-white/30 pr-2 mr-1">
+            {/* 🏥 Logo del hospital (solo móvil) — SIN borde aquí */}
+            <div className="flex sm:hidden items-center pr-2 mr-1">
               <div className="w-7 h-7 bg-white rounded-full overflow-hidden flex items-center justify-center">
                 <img
                   src={`/logos/${userHospital?.id || 'default'}.png`}
@@ -60,12 +60,12 @@ export const Header: React.FC = () => {
               </div>
             </div>
 
-            {/* 🔔 Campana SOLO móvil (fuera del bloque del nombre) */}
-            <div className="sm:hidden mr-1">
+            {/* 🔔 Campana SOLO móvil — con borde a la DERECHA */}
+            <div className="sm:hidden mr-1 pr-2 border-r border-white/30">
               <NotificationCenter />
             </div>
 
-            {/* 🏥 Bloque desktop: logo + nombre + campana (antes del border) */}
+            {/* 🏥 Bloque desktop: logo + nombre + campana (border a la derecha del bloque) */}
             <div className="hidden sm:flex items-center space-x-3 border-r border-white/30 pr-4">
               <div className="w-8 h-8 bg-white rounded-full overflow-hidden flex items-center justify-center">
                 <img
@@ -80,7 +80,7 @@ export const Header: React.FC = () => {
                 </p>
               </div>
 
-              {/* 🔔 Campana desktop: justo después del nombre y ANTES del border-right */}
+              {/* 🔔 Campana desktop: va dentro del bloque, el border del bloque queda a la derecha */}
               <div className="ml-1">
                 <NotificationCenter />
               </div>
