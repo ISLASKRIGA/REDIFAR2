@@ -50,11 +50,13 @@ message: `Nueva oferta de ${offer.medication_name || 'medicamento'}`,
   ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 6);
 
   // Get most requested medications
-  const medicationCounts = requests.reduce((acc, request) => {
-    const medName = request.medications?.name || 'Desconocido';
-    acc[medName] = (acc[medName] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
+ const medicationCounts = requests.reduce((acc, request) => {
+  const raw = (request.medication_name ?? '').trim();
+  const key = raw.toLocaleLowerCase() || 'desconocido'; // normaliza para evitar duplicados por may/min
+  acc[key] = (acc[key] || 0) + 1;
+  return acc;
+}, {} as Record<string, number>);
+
 
   const mostRequested = Object.entries(medicationCounts)
     .sort(([,a], [,b]) => b - a)
