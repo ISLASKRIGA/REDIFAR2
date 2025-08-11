@@ -14,6 +14,8 @@ import { MedicationOffers } from './components/MedicationOffers';
 import { HospitalNetwork } from './components/HospitalNetwork';
 import { Messages } from './components/Messages';
 import MessageListener from './components/MessageListener';
+import { initNewMessageSound, unlockNewMessageSound } from './utils/newMessageAlert';
+
 
 function App() {
   const { user, loading: authLoading } = useAuth();
@@ -75,14 +77,26 @@ const goTo = (tab: typeof tabsOrder[number]) => {
   enabled: isMobile,
   });
 
-  // ✅ Solicitar permisos de notificaciones del navegador
-  useEffect(() => {
-    if ('Notification' in window && Notification.permission === 'default') {
-      Notification.requestPermission().then(permission => {
-        console.log('🔔 Permiso de notificaciones:', permission);
-      });
-    }
-  }, []);
+// ✅ Solicitar permisos y preparar audio de notificación
+useEffect(() => {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission().then(permission => {
+      console.log('🔔 Permiso de notificaciones:', permission);
+    });
+  }
+
+  // 🔊 Prepara el audio y desbloquéalo en la primera interacción del usuario
+  initNewMessageSound();
+  const onFirstInteraction = () => unlockNewMessageSound();
+  window.addEventListener('click', onFirstInteraction, { once: true });
+  window.addEventListener('touchstart', onFirstInteraction, { once: true });
+
+  return () => {
+    window.removeEventListener('click', onFirstInteraction);
+    window.removeEventListener('touchstart', onFirstInteraction);
+  };
+}, []);
+
 
   const scrollToAuthForm = () => {
     setShowAuthForm(true);
