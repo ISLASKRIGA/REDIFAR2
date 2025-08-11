@@ -211,9 +211,13 @@ useEffect(() => {
 
 
 
-  useEffect(() => {
+ useEffect(() => {
   const draft = consumeMessageDraft();
-  if (draft) setMessageText(draft);
+  if (draft) {
+    setMessageText(draft);
+    // Espera al próximo frame para que el DOM mida bien el scrollHeight
+    requestAnimationFrame(() => resizeComposer());
+  }
 
   const target = consumeMessageTarget();
   if (target) {
@@ -221,6 +225,7 @@ useEffect(() => {
     if (typeof fetchMessages === 'function') fetchMessages(target);
   }
 }, []);
+
 
   const [searchTerm, setSearchTerm] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
