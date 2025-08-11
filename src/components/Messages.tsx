@@ -744,25 +744,28 @@ messages.slice().reverse().forEach((msg) => {
             </div>
 
             {/* Message Input */}
-            <form ref={formRef} onSubmit={handleSendMessage} className="p-3 sm:p-4 border-t border-gray-200 bg-white">
+          <form ref={formRef} onSubmit={handleSendMessage} className="p-2 sm:p-3 border-t border-gray-200 bg-gray-50">
+
 
               <div className="flex items-end space-x-2 sm:space-x-3">
-               <textarea
-  ref={textareaRef}
-  value={messageText}
-  onChange={(e) => setMessageText(e.target.value)}
-  rows={1}
-  placeholder="Escribe un mensaje"
-  className="w-full bg-white text-sm sm:text-base leading-5 px-4 py-2 rounded-2xl outline-none resize-none max-h-44 min-h-[40px] whitespace-pre-wrap"
-onKeyDown={(e) => {
-  // Enter envía; Shift+Enter hace salto de línea
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    formRef.current?.requestSubmit();
-  }
-}}
+              <div className="flex-1 flex items-center bg-gray-100 border border-gray-200 rounded-3xl px-3 sm:px-4 py-2">
+  <textarea
+    ref={textareaRef}
+    value={messageText}
+    onChange={(e) => setMessageText(e.target.value)}
+    rows={1}
+    placeholder="Escribe un mensaje"
+    className="w-full bg-transparent text-sm sm:text-base leading-5 outline-none resize-none max-h-44 min-h-[24px] placeholder-gray-400 text-gray-900 whitespace-pre-wrap overflow-y-auto"
+    onKeyDown={(e) => {
+      // Enter envía; Shift+Enter inserta salto de línea (estilo WhatsApp)
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        formRef.current?.requestSubmit();
+      }
+    }}
+  />
+</div>
 
-/>
 
                 <button
                   type="submit"
