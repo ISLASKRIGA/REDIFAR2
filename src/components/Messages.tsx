@@ -194,17 +194,21 @@ setLastMessagesMap((prev) => {
   const [messageText, setMessageText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
 const formRef = useRef<HTMLFormElement | null>(null);
+const resizeComposer = () => {
+  const el = textareaRef.current;
+  if (!el) return;
+  const MAX = 184; // ~6–7 líneas
+  el.style.height = 'auto';                   // permite encoger/crecer
+  const h = Math.min(el.scrollHeight, MAX);
+  el.style.height = `${h}px`;
+  el.style.overflowY = el.scrollHeight > MAX ? 'auto' : 'hidden'; // sólo muestra scroll al llegar al límite
+};
 
 // Auto-ajustar altura como WhatsApp
 useEffect(() => {
-  const el = textareaRef.current;
-  if (!el) return;
-  const MAX = 184; // ~6–7 líneas. Ajusta a tu gusto.
-  el.style.height = 'auto';                     // permite encoger/crecer
-  const h = Math.min(el.scrollHeight, MAX);
-  el.style.height = `${h}px`;
-  el.style.overflowY = el.scrollHeight > MAX ? 'auto' : 'hidden'; // scroll interno cuando llegue al límite
+  resizeComposer();
 }, [messageText]);
+
 
 
   useEffect(() => {
