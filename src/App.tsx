@@ -118,6 +118,12 @@ const isMobile = typeof window !== 'undefined'
         return <Dashboard onNavigate={setActiveTab} />;
     }
   };
+const swipeBind = useSwipeNavigation({
+  onSwipeLeft: goNextTab,
+  onSwipeRight: goPrevTab,
+  minDistance: 48,   // sensibilidad del gesto
+  enabled: isMobile, // sólo móvil
+});
 
   return (
     <div className="min-h-screen bg-gray-50 pt-14 sm:pt-16 pb-20 lg:pb-0">
