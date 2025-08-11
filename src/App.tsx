@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from 'react';
+import { useSwipeNavigation } from './hooks/useSwipeNavigation';
+
 import { HeroDemo } from './components/ui/demo';
 import { useAuth } from './hooks/useAuth';
 import { useHospitals } from './hooks/useHospitals';
@@ -16,8 +18,43 @@ import MessageListener from './components/MessageListener';
 function App() {
   const { user, loading: authLoading } = useAuth();
   const { hospitals, loading: hospitalsLoading } = useHospitals();
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'solicitudes' | 'insumos-disponibles' | 'hospitales' | 'transferencias' | 'mensajes'>('dashboard');
   const [showAuthForm, setShowAuthForm] = useState(false);
+
+  // Orden de pestañas que existen en el switch
+  const tabsOrder: Array<'dashboard' | 'solicitudes' | 'insumos-disponibles' | 'hospitales' | 'transferencias' | 'mensajes'> = [
+    'dashboard',
+    'solicitudes',
+    'insumos-disponibles',
+    'hospitales',
+    'transferencias',
+    'mensajes',
+  ];
+
+  const goTo = (tab: typeof tabsOrder[number]) => setActiveTab(tab);
+
+  const goNextTab = () => {
+    const i = tabsOrder.indexOf(activeTab);
+    if (i < tabsOrder.length - 1) goTo(tabsOrder[i + 1]);
+  };
+
+  const goPrevTab = () => {
+    const i = tabsOrder.indexOf(activeTab);
+    if (i > 0) goTo(tabsOrder[i - 1]);
+  };
+
+  // Habilitar swipe sólo en pantallas pequeñas (<= 640px)
+  const isMobile = typeof window !== 'undefined'
+    ? window.matchMedia('(max-width: 640px)').matches
+    : false;
+
+  // Handlers de swipe (colócalo ANTES de cualquier return condicional)
+  const swipeBind = useSwipeNavigation({
+    onSwipeLeft: goNextTab,
+    onSwipeRight: goPrevTab,
+    minDistance: 48,
+    enabled: isMobile && activeTab !== 'mensajes', // evita conflictos al escribir en el chat
+  });
 
   // ✅ Solicitar permisos de notificaciones del navegador
   useEffect(() => {
@@ -38,7 +75,7 @@ function App() {
     }, 100);
   };
 
-  // Mostrar pantalla de carga mientras se verifica autenticación
+  // Pantalla de carga mientras se verifica autenticación
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -67,13 +104,13 @@ function App() {
   const renderContent = () => {
     switch (activeTab) {
       case 'dashboard':
-        return <Dashboard onNavigate={setActiveTab} />;
+        return <Dashboard onNavigate={goTo} />;
       case 'hospitales':
         return <HospitalNetwork />;
       case 'solicitudes':
-        return <MedicationRequests onNavigate={setActiveTab} />;
+        return <MedicationRequests onNavigate={goTo} />;
       case 'insumos-disponibles':
-        return <MedicationOffers onNavigate={setActiveTab} />;
+        return <MedicationOffers onNavigate={goTo} />;
       case 'transferencias':
         return (
           <div className="text-center py-12">
@@ -86,7 +123,7 @@ function App() {
       case 'mensajes':
         return <Messages />;
       default:
-        return <Dashboard onNavigate={setActiveTab} />;
+        return <Dashboard onNavigate={goTo} />;
     }
   };
 
@@ -95,7 +132,10 @@ function App() {
       <Header />
       <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
       <MessageListener /> {/* Escucha global de nuevos mensajes */}
-      <main className="lg:ml-64 px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-4 lg:pb-8">
+      <main
+        className="lg:ml-64 px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-4 lg:pb-8 touch-pan-y"
+        {...swipeBind}
+      >
         {renderContent()}
       </main>
     </div>
