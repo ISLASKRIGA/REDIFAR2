@@ -47,9 +47,10 @@ export const Header: React.FC = () => {
             </div>
           </div>
 
-          <div className="flex items-center space-x-2 sm:space-x-4">
-            <NotificationCenter />
-{/* 🏥 Logo del hospital (solo móvil) */}
+         <div className="flex items-center space-x-2 sm:space-x-4">
+  {/* 🏥 Logo del hospital (solo móvil) */}
+
+
 <div className="flex sm:hidden items-center border-r border-white/30 pr-2 mr-1">
   <div className="w-7 h-7 bg-white rounded-full overflow-hidden flex items-center justify-center">
     <img
