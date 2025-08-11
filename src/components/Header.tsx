@@ -26,7 +26,7 @@ export const Header: React.FC = () => {
     <header className={`${hospitalColor.primary} shadow-lg border-b-4 ${hospitalColor.border} fixed top-0 left-0 right-0 z-40`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16">
-          {/* Lado izquierdo: logo + RETMI + nombre del hospital (sin campana) */}
+          {/* Lado izquierdo: logo + RETMI + nombre (sin campana) */}
           <div className="flex items-center">
             <div className="p-0.5 rounded-full bg-white/20 mr-3 flex items-center justify-center overflow-hidden ring-1 ring-white/30 backdrop-blur-sm">
               <img
@@ -60,7 +60,12 @@ export const Header: React.FC = () => {
               </div>
             </div>
 
-            {/* 🏥 Logo + nombre (DESKTOP) + campana al final, antes del borde */}
+            {/* 🔔 Campana SOLO móvil (fuera del bloque del nombre) */}
+            <div className="sm:hidden mr-1">
+              <NotificationCenter />
+            </div>
+
+            {/* 🏥 Bloque desktop: logo + nombre + campana (antes del border) */}
             <div className="hidden sm:flex items-center space-x-3 border-r border-white/30 pr-4">
               <div className="w-8 h-8 bg-white rounded-full overflow-hidden flex items-center justify-center">
                 <img
@@ -75,7 +80,7 @@ export const Header: React.FC = () => {
                 </p>
               </div>
 
-              {/* 🔔 Campana justo después del nombre y ANTES del border-right */}
+              {/* 🔔 Campana desktop: justo después del nombre y ANTES del border-right */}
               <div className="ml-1">
                 <NotificationCenter />
               </div>
