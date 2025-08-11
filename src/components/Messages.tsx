@@ -5,6 +5,8 @@ import { useHospitals } from '../hooks/useHospitals';
 import { useMessages } from '../hooks/useMessages';
 import { useHospitalColor } from '../hooks/useHospitalColor';
 import { supabase } from '../lib/supabase'; // o la ruta correcta donde esté tu instancia de Supabase
+import { consumeMessageDraft, consumeMessageTarget } from '../hooks/useMessageDraft';
+
 
 interface TransferAgreement {
   id: string;
@@ -190,6 +192,17 @@ setLastMessagesMap((prev) => {
   const hospitalColor = useHospitalColor(currentHospital?.id);
   
   const [messageText, setMessageText] = useState('');
+  useEffect(() => {
+  const draft = consumeMessageDraft();
+  if (draft) setMessageText(draft);
+
+  const target = consumeMessageTarget();
+  if (target) {
+    setSelectedHospital(target);
+    if (typeof fetchMessages === 'function') fetchMessages(target);
+  }
+}, []);
+
   const [searchTerm, setSearchTerm] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -243,33 +256,37 @@ setLastMessagesMap((prev) => {
 
 
   // Verificar si hay información de contacto pendiente
- useEffect(() => {
+// Verificar si hay información de contacto pendiente (prefill, SIN enviar)
+useEffect(() => {
   const contactInfo = localStorage.getItem('contactHospital');
-
   if (!contactInfo || !currentHospital) return;
 
   try {
     const { hospitalId, subject } = JSON.parse(contactInfo);
-
-    // Solo si aún no se había enviado (evita doble envío)
     if (hospitalId && subject) {
       setSelectedHospital(hospitalId);
+      if (typeof fetchMessages === 'function') fetchMessages(hospitalId);
 
-      const autoMessage = `Hola, me interesa contactarte sobre: ${subject}`;
+      const draft = [
+        `👋 Hola,`,
+        `Sobre: ${subject}.`,
+        ``,
+        `✔️ Disponibilidad: [indicar]`,
+        `🚚 Entrega/Recogida: [indicar]`,
+        `📍 Ubicación: [indicar]`,
+        `☎️ Contacto: [indicar]`,
+        ``,
+        `¿Les funciona esta opción?`
+      ].join('\n');
 
-      sendMessage({
-        sender_hospital_id: currentHospital.id,
-        recipient_hospital_id: hospitalId,
-        content: autoMessage,
-        message_type: 'text'
-      });
-
-      localStorage.removeItem('contactHospital'); // ✅ Elimínalo al instante
+      setMessageText(draft);
+      localStorage.removeItem('contactHospital'); // ✅ ya lo consumimos
     }
   } catch (error) {
     console.error('Error parsing contact info:', error);
   }
 }, [currentHospital]);
+
 
 
  const filteredHospitals = otherHospitals
