@@ -333,11 +333,12 @@ useEffect(() => {
       setTimeout(scrollToBottom, 50);
       
       const { error } = await sendMessage({
-        sender_hospital_id: currentHospital.id,
-        recipient_hospital_id: selectedHospital,
-        content: messageText.trim(),
-        message_type: 'text'
-      });
+  sender_hospital_id: currentHospital.id,
+  recipient_hospital_id: selectedHospital,
+  content: messageText.trim(),
+  messages_type: 'text'
+});
+
 
       if (error) {
         setMessageText(messageText.trim());
