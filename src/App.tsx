@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useSwipeNavigation } from '../hooks/useSwipeNavigation';
+import { useSwipeNavigation } from './hooks/useSwipeNavigation';
 
 import { HeroDemo } from './components/ui/demo';
 import { useAuth } from './hooks/useAuth';
