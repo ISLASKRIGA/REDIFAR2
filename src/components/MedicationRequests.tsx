@@ -5,6 +5,7 @@ import { useHospitals } from '../hooks/useHospitals';
 import { useAuth } from '../hooks/useAuth';
 import { useNotifications } from '../hooks/useNotifications';
 import { useHospitalColor } from '../hooks/useHospitalColor';
+import { setMessageDraft, setMessageTarget } from '../hooks/useMessageDraft';
 
 interface MedicationRequestsProps {
   onNavigate: (tab: string) => void;
@@ -37,11 +38,13 @@ export const MedicationRequests: React.FC<MedicationRequestsProps> = ({ onNaviga
 
 
   const filteredRequests = requests.filter(request => {
-    const matchesSearch = request.medications?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         request.hospitals?.name?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesUrgency = selectedUrgency === 'all' || request.urgency === selectedUrgency;
-    return matchesSearch && matchesUrgency;
-  });
+  const matchesSearch =
+    (request.medication_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (request.hospitals?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
+  const matchesUrgency = selectedUrgency === 'all' || request.urgency === selectedUrgency;
+  return matchesSearch && matchesUrgency;
+});
+
 
   const urgencyColors = {
     low: 'bg-green-100 text-green-800',
