@@ -225,6 +225,10 @@ useEffect(() => {
     if (typeof fetchMessages === 'function') fetchMessages(target);
   }
 }, []);
+requestAnimationFrame(() => {
+  textareaRef.current?.focus();
+  resizeComposer();
+});
 
 
   const [searchTerm, setSearchTerm] = useState('');
