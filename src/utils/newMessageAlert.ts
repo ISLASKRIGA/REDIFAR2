@@ -7,40 +7,31 @@ export function initNewMessageSound() {
   audio.volume = 0.7;
 }
 
-/** Desbloquea el audio en iOS/Android: se llama en el primer toque/click del usuario */
+/** Desbloquea el audio en el primer toque/click (iOS/Android) */
 export function unlockNewMessageSound() {
-  try {
-    initNewMessageSound();
-    if (!audio) return;
-    const a = audio;
-    const prevMuted = a.muted;
-    a.muted = true;
-    a.currentTime = 0;
-    a.play()
-      .then(() => {
-        a.pause();
-        a.muted = prevMuted;
-      })
-      .catch(() => {/* ignorar */});
-  } catch {/* ignorar */}
+  initNewMessageSound();
+  if (!audio) return;
+  const a = audio;
+  const prevMuted = a.muted;
+  a.muted = true;
+  a.currentTime = 0;
+  a.play().then(() => {
+    a.pause();
+    a.muted = prevMuted;
+  }).catch(() => {});
 }
 
 export function playNewMessageSound() {
-  try {
-    initNewMessageSound();
-    if (!audio) return;
-    audio.currentTime = 0;
-    audio.play().catch(() => {/* navegador bloqueó el autoplay */});
-  } catch {/* ignorar */}
+  initNewMessageSound();
+  if (!audio) return;
+  audio.currentTime = 0;
+  audio.play().catch(() => {});
 }
 
-export function vibrate(pattern: number | number[] = [70, 40, 120]) {
-  if ('vibrate' in navigator) {
-    navigator.vibrate(pattern);
-  }
+export function vibrate(pattern: number | number[] = [60, 30, 60]) {
+  if ('vibrate' in navigator) navigator.vibrate(pattern);
 }
 
-/** Llama a sonido + vibración */
 export function alertNewMessage() {
   playNewMessageSound();
   vibrate([60, 30, 60]);
