@@ -11,6 +11,7 @@ export const useMedicationRequests = () => {
   const [requests, setRequests] = useState<MedicationRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const { refreshNotifications } = useNotifications();
 
   const fetchRequests = async () => {
     try {
@@ -54,8 +55,8 @@ export const useMedicationRequests = () => {
 
     if (error) throw error;
 
-    const { refreshNotifications } = useNotifications(); // 👈
-    refreshNotifications(); // 👈 actualiza notificaciones
+   refreshNotifications();
+
 
     setTimeout(fetchRequests, 500);
     return { data, error: null };
