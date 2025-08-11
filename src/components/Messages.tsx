@@ -492,7 +492,8 @@ messages.slice().reverse().forEach((msg) => {
 
 
   return (
-    <div className="h-[calc(100vh-10rem)] sm:h-[calc(100vh-12rem)] lg:h-[calc(100vh-8rem)] flex flex-col lg:flex-row bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+   <div className="h-[calc(100vh-10rem)] sm:h-[calc(100vh-12rem)] lg:h-[calc(100vh-8rem)] flex flex-col lg:flex-row bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+
       {/* Sidebar - Hospitals List */}
      <div className={`flex flex-col ${isMobile && selectedHospital ? 'hidden' : 'flex'} w-full lg:w-1/3`}>
 
