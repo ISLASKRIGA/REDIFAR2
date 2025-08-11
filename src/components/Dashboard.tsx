@@ -1,5 +1,6 @@
 import React from 'react';
-import { TrendingUp, TrendingDown, Clock, CheckCircle, AlertTriangle, Users, Package, Search, Plus, ArrowRight } from 'lucide-react';
+import { TrendingUp, TrendingDown, Clock, CheckCircle, AlertTriangle, Users, Package, Search, Plus, ArrowRight, ArrowRightLeft } from 'lucide-react';
+
 import { useAuth } from '../hooks/useAuth';
 import { useHospitals } from '../hooks/useHospitals';
 import { useMedicationRequests } from '../hooks/useMedicationRequests';
@@ -49,19 +50,19 @@ message: `Nueva oferta de ${offer.medication_name || 'medicamento'}`,
   ].sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime()).slice(0, 6);
 
   // Get most requested medications
-  const medicationCounts = requests.reduce((acc, request) => {
-   const medName = (request.medication_name ?? '').trim() || 'Desconocido';
-const key = medName.toLowerCase();
+ const medicationCounts = requests.reduce((acc, request) => {
+  const raw = (request.medication_name ?? '').trim();
+  const key = raw.toLocaleLowerCase() || 'desconocido'; // normaliza para evitar duplicados por may/min
+  acc[key] = (acc[key] || 0) + 1;
+  return acc;
+}, {} as Record<string, number>);
 
-acc[key] = (acc[key] || 0) + 1;
-    return acc;
-  }, {} as Record<string, number>);
 
   const mostRequested = Object.entries(medicationCounts)
     .sort(([,a], [,b]) => b - a)
     .slice(0, 5)
-    .map(([name, count]) => ({
-  name: name.charAt(0).toUpperCase() + name.slice(1),
+   .map(([key, count]) => ({
+  name: key === 'desconocido' ? 'Desconocido' : key.charAt(0).toUpperCase() + key.slice(1),
   requests: count
 }));
 
@@ -81,7 +82,7 @@ acc[key] = (acc[key] || 0) + 1;
       change: '+' + Math.floor(totalOffers * 0.15), 
       trend: 'up', 
       icon: Package,
-      onClick: () => onNavigate('ofertas')
+      onClick: () => onNavigate('insumos-disponibles')
     },
     { 
       title: 'Hospitales Conectados', 
@@ -201,15 +202,16 @@ acc[key] = (acc[key] || 0) + 1;
               <ArrowRight className="w-4 h-4 hidden sm:block" />
             </button>
             <button
-              onClick={() => onNavigate('hospitales')}
-              className="w-full flex items-center justify-between p-3 sm:p-4 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors"
-            >
-              <div className="flex items-center">
-                <Users className="w-5 h-5 mr-3" />
-                <span className="text-sm sm:text-base font-medium">Ver Red Hospitalaria</span>
-              </div>
-              <ArrowRight className="w-4 h-4 hidden sm:block" />
-            </button>
+  onClick={() => onNavigate('transferencias')}
+  className="w-full flex items-center justify-between p-3 sm:p-4 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors"
+>
+  <div className="flex items-center">
+    <ArrowRightLeft className="w-5 h-5 mr-3" />
+    <span className="text-sm sm:text-base font-medium">Transferencias</span>
+  </div>
+  <ArrowRight className="w-4 h-4 hidden sm:block" />
+</button>
+
           </div>
         </div>
 
