@@ -104,6 +104,13 @@ const isMobile = typeof window !== 'undefined'
       case 'insumos-disponibles':
         return <MedicationOffers onNavigate={setActiveTab} />;
       case 'transferencias':
+        const swipeBind = useSwipeNavigation({
+  onSwipeLeft: goNextTab,
+  onSwipeRight: goPrevTab,
+  minDistance: 48,   // sensibilidad del gesto
+  enabled: isMobile, // sólo móvil
+});
+
         return (
           <div className="text-center py-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Transferencias</h2>
@@ -118,12 +125,6 @@ const isMobile = typeof window !== 'undefined'
         return <Dashboard onNavigate={setActiveTab} />;
     }
   };
-const swipeBind = useSwipeNavigation({
-  onSwipeLeft: goNextTab,
-  onSwipeRight: goPrevTab,
-  minDistance: 48,   // sensibilidad del gesto
-  enabled: isMobile, // sólo móvil
-});
 
   return (
     <div className="min-h-screen bg-gray-50 pt-14 sm:pt-16 pb-20 lg:pb-0">
