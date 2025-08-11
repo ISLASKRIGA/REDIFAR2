@@ -32,7 +32,8 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
   const recentActivity = [
     ...requests.slice(0, 3).map(request => ({
       type: 'request' as const,
-      message: `Nueva solicitud de ${request.medications?.name || 'medicamento'}`,
+      message: `Nueva solicitud de ${request.medication_name || 'medicamento'}`,
+
       hospital: request.hospitals?.name || 'Hospital',
       time: new Date(request.created_at).toLocaleString(),
       urgent: request.urgency === 'critical' || request.urgency === 'high',
@@ -40,7 +41,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
     })),
     ...offers.slice(0, 3).map(offer => ({
       type: 'offer' as const,
-      message: `Nueva oferta de ${offer.medications?.name || 'medicamento'}`,
+message: `Nueva oferta de ${offer.medication_name || 'medicamento'}`,
       hospital: offer.hospitals?.name || 'Hospital',
       time: new Date(offer.created_at).toLocaleString(),
       urgent: false,
