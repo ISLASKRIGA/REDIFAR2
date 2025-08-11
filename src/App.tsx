@@ -20,33 +20,33 @@ function App() {
   const { hospitals, loading: hospitalsLoading } = useHospitals();
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showAuthForm, setShowAuthForm] = useState(false);
-  const tabsOrder: Array<'dashboard' | 'solicitudes' | 'ofertas' | 'insumos-disponibles' | 'hospitales' | 'transferencias' | 'mensajes'> = [
-  'dashboard',
-  'solicitudes',
-  'ofertas',
-  'insumos-disponibles',
-  'hospitales',
-  'transferencias',
-  'mensajes',
-];
 
-const goTo = (tab: typeof tabsOrder[number]) => setActiveTab(tab);
+  // Orden de pestañas (coincide con los case del switch)
+  const tabsOrder: Array<'dashboard' | 'solicitudes' | 'insumos-disponibles' | 'hospitales' | 'transferencias' | 'mensajes'> = [
+    'dashboard',
+    'solicitudes',
+    'insumos-disponibles',
+    'hospitales',
+    'transferencias',
+    'mensajes',
+  ];
 
-const goNextTab = () => {
-  const i = tabsOrder.indexOf(activeTab as typeof tabsOrder[number]);
-  if (i < tabsOrder.length - 1) goTo(tabsOrder[i + 1]);
-};
+  const goTo = (tab: typeof tabsOrder[number]) => setActiveTab(tab);
 
-const goPrevTab = () => {
-  const i = tabsOrder.indexOf(activeTab as typeof tabsOrder[number]);
-  if (i > 0) goTo(tabsOrder[i - 1]);
-};
+  const goNextTab = () => {
+    const i = tabsOrder.indexOf(activeTab as typeof tabsOrder[number]);
+    if (i < tabsOrder.length - 1) goTo(tabsOrder[i + 1]);
+  };
 
-// Habilitar sólo en pantallas pequeñas (<= 640px)
-const isMobile = typeof window !== 'undefined'
-  ? window.matchMedia('(max-width: 640px)').matches
-  : false;
+  const goPrevTab = () => {
+    const i = tabsOrder.indexOf(activeTab as typeof tabsOrder[number]);
+    if (i > 0) goTo(tabsOrder[i - 1]);
+  };
 
+  // Habilitar sólo en pantallas pequeñas (<= 640px)
+  const isMobile = typeof window !== 'undefined'
+    ? window.matchMedia('(max-width: 640px)').matches
+    : false;
 
   // ✅ Solicitar permisos de notificaciones del navegador
   useEffect(() => {
@@ -95,26 +95,15 @@ const isMobile = typeof window !== 'undefined'
 
   const renderContent = () => {
     switch (activeTab) {
-     case 'dashboard':
-  return <Dashboard onNavigate={goTo} />;
-
+      case 'dashboard':
+        return <Dashboard onNavigate={goTo} />;
       case 'hospitales':
         return <HospitalNetwork />;
       case 'solicitudes':
-  return <MedicationRequests onNavigate={goTo} />;
-
+        return <MedicationRequests onNavigate={goTo} />;
       case 'insumos-disponibles':
-  return <MedicationOffers onNavigate={setActiveTab} />;
-
+        return <MedicationOffers onNavigate={goTo} />;
       case 'transferencias':
-        const swipeBind = useSwipeNavigation({
-  onSwipeLeft: goNextTab,
-  onSwipeRight: goPrevTab,
-  minDistance: 48,   // sensibilidad del gesto
-  enabled: isMobile, // sólo móvil
-});
-
-
         return (
           <div className="text-center py-12">
             <h2 className="text-2xl font-bold text-gray-900 mb-4">Transferencias</h2>
@@ -126,9 +115,17 @@ const isMobile = typeof window !== 'undefined'
       case 'mensajes':
         return <Messages />;
       default:
-        return <Dashboard onNavigate={setActiveTab} />;
+        return <Dashboard onNavigate={goTo} />;
     }
   };
+
+  // Handlers de swipe (fuera del switch, disponibles para <main>)
+  const swipeBind = useSwipeNavigation({
+    onSwipeLeft: goNextTab,
+    onSwipeRight: goPrevTab,
+    minDistance: 48,                     // sensibilidad del gesto
+    enabled: isMobile && activeTab !== 'mensajes', // desactivar en chat para evitar conflictos
+  });
 
   return (
     <div className="min-h-screen bg-gray-50 pt-14 sm:pt-16 pb-20 lg:pb-0">
@@ -136,10 +133,10 @@ const isMobile = typeof window !== 'undefined'
       <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
       <MessageListener /> {/* Escucha global de nuevos mensajes */}
       <main
-  className="lg:ml-64 px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-4 lg:pb-8 touch-pan-y"
-  {...swipeBind}
->
-
+        className="lg:ml-64 px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-4 lg:pb-8 touch-pan-y"
+        {...swipeBind}
+      >
+        {renderContent()}
       </main>
     </div>
   );
