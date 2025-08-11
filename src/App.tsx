@@ -95,8 +95,9 @@ const isMobile = typeof window !== 'undefined'
 
   const renderContent = () => {
     switch (activeTab) {
-      case 'dashboard':
-        return <Dashboard onNavigate={setActiveTab} />;
+     case 'dashboard':
+  return <Dashboard onNavigate={goTo} />;
+
       case 'hospitales':
         return <HospitalNetwork />;
       case 'solicitudes':
