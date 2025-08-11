@@ -738,7 +738,8 @@ messages.slice().reverse().forEach((msg) => {
             </div>
 
             {/* Message Input */}
-            <form onSubmit={handleSendMessage} className="p-3 sm:p-4 border-t border-gray-200 bg-white">
+            <form ref={formRef} onSubmit={handleSendMessage} className="p-3 sm:p-4 border-t border-gray-200 bg-white">
+
               <div className="flex items-end space-x-2 sm:space-x-3">
                <textarea
   ref={textareaRef}
