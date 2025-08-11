@@ -201,15 +201,16 @@ acc[key] = (acc[key] || 0) + 1;
               <ArrowRight className="w-4 h-4 hidden sm:block" />
             </button>
             <button
-              onClick={() => onNavigate('hospitales')}
-              className="w-full flex items-center justify-between p-3 sm:p-4 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors"
-            >
-              <div className="flex items-center">
-                <Users className="w-5 h-5 mr-3" />
-                <span className="text-sm sm:text-base font-medium">Ver Red Hospitalaria</span>
-              </div>
-              <ArrowRight className="w-4 h-4 hidden sm:block" />
-            </button>
+  onClick={() => onNavigate('transferencias')}
+  className="w-full flex items-center justify-between p-3 sm:p-4 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors"
+>
+  <div className="flex items-center">
+    <ArrowRightLeft className="w-5 h-5 mr-3" />
+    <span className="text-sm sm:text-base font-medium">Transferencias</span>
+  </div>
+  <ArrowRight className="w-4 h-4 hidden sm:block" />
+</button>
+
           </div>
         </div>
 
