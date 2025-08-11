@@ -713,7 +713,8 @@ messages.slice().reverse().forEach((msg) => {
                             {message.sender_hospital?.name || 'Hospital'}
                           </p>
                         )}
-                        <p className="text-sm leading-relaxed">{message.content}</p>
+                       <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">{message.content}</p>
+
                         <div className={`flex items-center justify-end mt-1 space-x-1 ${
                           isOwn ? 'text-white/70' : 'text-gray-500'
                         }`}>
