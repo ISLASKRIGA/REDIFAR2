@@ -521,7 +521,8 @@ messages.slice().reverse().forEach((msg) => {
         </div>
 
         {/* Hospitals List */}
-        <div className="flex-1 overflow-y-auto bg-white">
+        <div className="flex-1 overflow-y-auto scrollbar-wa bg-white">
+
           {filteredHospitals.length === 0 ? (
             <div className="p-4 sm:p-6 text-center text-gray-500">
               <MessageCircle className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-3 text-gray-300" />
