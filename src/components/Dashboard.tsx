@@ -195,7 +195,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
               <ArrowRight className="w-4 h-4 hidden sm:block" />
             </button>
             <button
-  onClick={() => onNavigate('mensajes')}
+  onClick={() => onNavigate('transferencias')}
   className="w-full flex items-center justify-between p-3 sm:p-4 bg-purple-100 text-purple-700 rounded-lg hover:bg-purple-200 transition-colors"
 >
   <div className="flex items-center">
