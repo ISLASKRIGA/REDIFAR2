@@ -748,13 +748,14 @@ messages.slice().reverse().forEach((msg) => {
   rows={1}
   placeholder="Escribe un mensaje"
   className="w-full bg-white text-sm sm:text-base leading-5 px-4 py-2 rounded-2xl outline-none resize-none max-h-44 min-h-[40px] whitespace-pre-wrap"
-  onKeyDown={(e) => {
-    // Enter envía; Shift+Enter hace salto de línea (estilo WhatsApp)
-    if (e.key === 'Enter' && !e.shiftKey) {
-      e.preventDefault();
-      handleSend(); // usa aquí tu misma función que dispara el envío del botón
-    }
-  }}
+onKeyDown={(e) => {
+  // Enter envía; Shift+Enter hace salto de línea
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    formRef.current?.requestSubmit();
+  }
+}}
+
 />
 
                 <button
