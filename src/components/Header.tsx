@@ -43,7 +43,13 @@ export const Header: React.FC = () => {
       </p>
     )}
   </div>
+
+  {/* 🔔 Campana a la derecha del nombre */}
+  <div className="ml-3">
+    <NotificationCenter />
+  </div>
 </div>
+
 
 
          <div className="flex items-center space-x-2 sm:space-x-4">
