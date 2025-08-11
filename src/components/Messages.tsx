@@ -193,6 +193,7 @@ setLastMessagesMap((prev) => {
   
   const [messageText, setMessageText] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+const formRef = useRef<HTMLFormElement | null>(null);
 
 // Auto-ajustar altura como WhatsApp
 useEffect(() => {
