@@ -5,6 +5,7 @@ import { useHospitals } from '../hooks/useHospitals';
 import { useAuth } from '../hooks/useAuth';
 import { useNotifications } from '../hooks/useNotifications';
 import { useHospitalColor } from '../hooks/useHospitalColor';
+import { setMessageDraft, setMessageTarget } from '../hooks/useMessageDraft';
 
 interface MedicationRequestsProps {
   onNavigate: (tab: string) => void;
@@ -37,11 +38,13 @@ export const MedicationRequests: React.FC<MedicationRequestsProps> = ({ onNaviga
 
 
   const filteredRequests = requests.filter(request => {
-    const matchesSearch = request.medications?.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         request.hospitals?.name?.toLowerCase().includes(searchTerm.toLowerCase());
-    const matchesUrgency = selectedUrgency === 'all' || request.urgency === selectedUrgency;
-    return matchesSearch && matchesUrgency;
-  });
+  const matchesSearch =
+    (request.medication_name || '').toLowerCase().includes(searchTerm.toLowerCase()) ||
+    (request.hospitals?.name || '').toLowerCase().includes(searchTerm.toLowerCase());
+  const matchesUrgency = selectedUrgency === 'all' || request.urgency === selectedUrgency;
+  return matchesSearch && matchesUrgency;
+});
+
 
   const urgencyColors = {
     low: 'bg-green-100 text-green-800',
@@ -231,9 +234,34 @@ medication_name: formData.medicationName, // ✅ Correcto
                   <Clock className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                   {new Date(request.created_at).toLocaleDateString()}
                 </div>
-                <button className="bg-teal-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors text-sm">
-                  Responder
-                </button>
+                <button
+  onClick={() => {
+    const med = request.medication_name || 'medicamento';
+    const qty = request.quantity ? `${request.quantity} ${request.unit || ''}` : '';
+    const hospName = request.hospitals?.name || 'su hospital';
+    const ref  = (typeof request.id === 'string' && request.id.slice) ? request.id.slice(0, 8) : String(request.id || '');
+
+    const draft = [
+      `👋 Hola ${hospName},`,
+      `Sobre su solicitud de ${med}${qty ? ` (${qty})` : ''}${ref ? ` [ref: ${ref}]` : ''}.`,
+      ``,
+      `✔️ Disponibilidad: [indicar]`,
+      `🚚 Entrega/Recogida: [indicar]`,
+      `📍 Ubicación: [indicar]`,
+      `☎️ Contacto: [indicar]`,
+      ``,
+      `¿Les funciona esta opción?`
+    ].join('\n');
+
+    setMessageDraft(draft);
+    if (request.hospitals?.id) setMessageTarget(String(request.hospitals.id));
+    onNavigate('mensajes');
+  }}
+  className="bg-teal-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-teal-700 transition-colors text-sm"
+>
+  Responder
+</button>
+
               </div>
             </div>
           ))}
@@ -296,10 +324,31 @@ medication_name: formData.medicationName, // ✅ Correcto
                       <div className="text-xs sm:text-sm text-gray-900">{request.contact_person}</div>
                     </td>
                     <td className="px-3 sm:px-6 py-4 whitespace-nowrap text-right text-xs sm:text-sm font-medium">
-                      <button 
-                        onClick={() => handleContactHospital(request.hospitals?.id, request.hospitals?.name, `Solicitud: ${request.medication_name}`)}
-                        className="bg-teal-600 text-white px-2 sm:px-3 py-1 rounded-md hover:bg-teal-700 transition-colors text-xs"
-                      >
+                      <button
+  onClick={() => {
+    const med = request.medication_name || 'medicamento';
+    const qty = request.quantity ? `${request.quantity} ${request.unit || ''}` : '';
+    const hospName = request.hospitals?.name || 'su hospital';
+    const ref  = (typeof request.id === 'string' && request.id.slice) ? request.id.slice(0, 8) : String(request.id || '');
+    const draft = [
+      `👋 Hola ${hospName},`,
+      `Sobre su solicitud de ${med}${qty ? ` (${qty})` : ''}${ref ? ` [ref: ${ref}]` : ''}.`,
+      ``,
+      `✔️ Disponibilidad: [indicar]`,
+      `🚚 Entrega/Recogida: [indicar]`,
+      `📍 Ubicación: [indicar]`,
+      `☎️ Contacto: [indicar]`,
+      ``,
+      `¿Les funciona esta opción?`
+    ].join('\n');
+
+    setMessageDraft(draft);
+    if (request.hospitals?.id) setMessageTarget(String(request.hospitals.id));
+    onNavigate('mensajes');
+  }}
+  className="bg-teal-600 text-white px-2 sm:px-3 py-1 rounded-md hover:bg-teal-700 transition-colors text-xs"
+>
+
                         <span className="sm:hidden">Resp.</span>
                         <span className="hidden sm:inline">Responder</span>
                       </button>

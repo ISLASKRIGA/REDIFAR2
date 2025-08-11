@@ -223,3 +223,77 @@
 .message-input:focus {
   background-color: white;
 }
+/* ===== Scrollbar tipo WhatsApp ===== */
+.scrollbar-wa{
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(95,99,104,.35) transparent;
+}
+
+/* WebKit (Chrome, Edge, Opera, Safari) */
+.scrollbar-wa::-webkit-scrollbar{
+  width: 8px;
+  height: 8px;
+}
+.scrollbar-wa::-webkit-scrollbar-track{
+  background: transparent;
+}
+.scrollbar-wa::-webkit-scrollbar-thumb{
+  background-color: rgba(95,99,104,.35); /* gris translúcido */
+  border-radius: 9999px;
+  border: 2px solid transparent; /* deja espacio (como overlay) */
+  background-clip: padding-box;
+}
+.scrollbar-wa:hover::-webkit-scrollbar-thumb{
+  background-color: rgba(95,99,104,.5);
+}
+.scrollbar-wa::-webkit-scrollbar-corner{
+  background: transparent;
+}
+
+/* más delgado en pantallas chicas */
+@media (max-width: 640px){
+  .scrollbar-wa::-webkit-scrollbar{ width: 4px; height: 4px; }
+}
+/* ===== Scrollbar GLOBAL tipo WhatsApp ===== */
+:root{
+  --wa-sb: rgba(95,99,104,.35);
+  --wa-sb-hover: rgba(95,99,104,.5);
+}
+
+/* Firefox */
+html, body {
+  scrollbar-width: thin;
+  scrollbar-color: var(--wa-sb) transparent;
+}
+
+/* WebKit (Chrome, Edge, Opera, Safari) */
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+html::-webkit-scrollbar-track,
+body::-webkit-scrollbar-track {
+  background: transparent;
+}
+html::-webkit-scrollbar-thumb,
+body::-webkit-scrollbar-thumb {
+  background-color: var(--wa-sb);
+  border-radius: 9999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+html:hover::-webkit-scrollbar-thumb,
+body:hover::-webkit-scrollbar-thumb {
+  background-color: var(--wa-sb-hover);
+}
+
+/* Más delgado en móvil */
+@media (max-width: 640px){
+  html::-webkit-scrollbar,
+  body::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+}

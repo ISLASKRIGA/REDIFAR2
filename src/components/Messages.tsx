@@ -5,6 +5,8 @@ import { useHospitals } from '../hooks/useHospitals';
 import { useMessages } from '../hooks/useMessages';
 import { useHospitalColor } from '../hooks/useHospitalColor';
 import { supabase } from '../lib/supabase'; // o la ruta correcta donde esté tu instancia de Supabase
+import { consumeMessageDraft, consumeMessageTarget } from '../hooks/useMessageDraft';
+
 
 interface TransferAgreement {
   id: string;
@@ -190,6 +192,45 @@ setLastMessagesMap((prev) => {
   const hospitalColor = useHospitalColor(currentHospital?.id);
   
   const [messageText, setMessageText] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+const formRef = useRef<HTMLFormElement | null>(null);
+const resizeComposer = () => {
+  const el = textareaRef.current;
+  if (!el) return;
+  const MAX = 184; // ~6–7 líneas
+  el.style.height = 'auto';                   // permite encoger/crecer
+  const h = Math.min(el.scrollHeight, MAX);
+  el.style.height = `${h}px`;
+  el.style.overflowY = el.scrollHeight > MAX ? 'auto' : 'hidden'; // sólo muestra scroll al llegar al límite
+};
+
+// Auto-ajustar altura como WhatsApp
+useEffect(() => {
+  resizeComposer();
+}, [messageText]);
+
+
+
+ useEffect(() => {
+  const draft = consumeMessageDraft();
+  if (draft) {
+    setMessageText(draft);
+    // Espera al próximo frame para que el DOM mida bien el scrollHeight
+    requestAnimationFrame(() => resizeComposer());
+  }
+
+  const target = consumeMessageTarget();
+  if (target) {
+    setSelectedHospital(target);
+    if (typeof fetchMessages === 'function') fetchMessages(target);
+  }
+}, []);
+requestAnimationFrame(() => {
+  textareaRef.current?.focus();
+  resizeComposer();
+});
+
+
   const [searchTerm, setSearchTerm] = useState('');
   const [sendingMessage, setSendingMessage] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -243,33 +284,37 @@ setLastMessagesMap((prev) => {
 
 
   // Verificar si hay información de contacto pendiente
- useEffect(() => {
+// Verificar si hay información de contacto pendiente (prefill, SIN enviar)
+useEffect(() => {
   const contactInfo = localStorage.getItem('contactHospital');
-
   if (!contactInfo || !currentHospital) return;
 
   try {
     const { hospitalId, subject } = JSON.parse(contactInfo);
-
-    // Solo si aún no se había enviado (evita doble envío)
     if (hospitalId && subject) {
       setSelectedHospital(hospitalId);
+      if (typeof fetchMessages === 'function') fetchMessages(hospitalId);
 
-      const autoMessage = `Hola, me interesa contactarte sobre: ${subject}`;
+      const draft = [
+        `👋 Hola,`,
+        `Sobre: ${subject}.`,
+        ``,
+        `✔️ Disponibilidad: [indicar]`,
+        `🚚 Entrega/Recogida: [indicar]`,
+        `📍 Ubicación: [indicar]`,
+        `☎️ Contacto: [indicar]`,
+        ``,
+        `¿Les funciona esta opción?`
+      ].join('\n');
 
-      sendMessage({
-        sender_hospital_id: currentHospital.id,
-        recipient_hospital_id: hospitalId,
-        content: autoMessage,
-        message_type: 'text'
-      });
-
-      localStorage.removeItem('contactHospital'); // ✅ Elimínalo al instante
+      setMessageText(draft);
+      localStorage.removeItem('contactHospital'); // ✅ ya lo consumimos
     }
   } catch (error) {
     console.error('Error parsing contact info:', error);
   }
 }, [currentHospital]);
+
 
 
  const filteredHospitals = otherHospitals
@@ -303,11 +348,12 @@ setLastMessagesMap((prev) => {
       setTimeout(scrollToBottom, 50);
       
       const { error } = await sendMessage({
-        sender_hospital_id: currentHospital.id,
-        recipient_hospital_id: selectedHospital,
-        content: messageText.trim(),
-        message_type: 'text'
-      });
+  sender_hospital_id: currentHospital.id,
+  recipient_hospital_id: selectedHospital,
+  content: messageText.trim(),
+  messages_type: 'text'
+});
+
 
       if (error) {
         setMessageText(messageText.trim());
@@ -361,12 +407,13 @@ setLastMessagesMap((prev) => {
     // Enviar mensaje sobre la transferencia
     const transferMessage = `🔄 PROPUESTA DE TRANSFERENCIA\n\nMedicamento: ${transferData.medicationName}\nCantidad: ${transferData.quantity} unidades\n\n¿Estás de acuerdo con esta transferencia? Responde "ACEPTO" para confirmar.`;
     
-    await sendMessage({
-      sender_hospital_id: currentHospital.id,
-      recipient_hospital_id: selectedHospital,
-      content: transferMessage,
-      message_type: 'text'
-    });
+   await sendMessage({
+  sender_hospital_id: currentHospital.id,
+  recipient_hospital_id: selectedHospital,
+  content: transferMessage,
+  messages_type: 'text'
+});
+
 
     setShowTransferModal(false);
     setTransferData({ medicationName: '', quantity: 0, recipientHospitalId: '' });
@@ -383,12 +430,13 @@ setLastMessagesMap((prev) => {
 
     // Enviar mensaje de confirmación
     if (currentHospital && selectedHospital) {
-      await sendMessage({
-        sender_hospital_id: currentHospital.id,
-        recipient_hospital_id: selectedHospital,
-        content: "✅ ACEPTO la transferencia propuesta. La transferencia está ahora confirmada y puede proceder.",
-        message_type: 'text'
-      });
+     await sendMessage({
+  sender_hospital_id: currentHospital.id,
+  recipient_hospital_id: selectedHospital,
+  content: "✅ ACEPTO la transferencia propuesta. La transferencia está ahora confirmada y puede proceder.",
+  messages_type: 'text'
+});
+
     }
   }, [currentHospital, selectedHospital, sendMessage]);
 
@@ -473,7 +521,8 @@ messages.slice().reverse().forEach((msg) => {
         </div>
 
         {/* Hospitals List */}
-        <div className="flex-1 overflow-y-auto bg-white">
+        <div className="flex-1 overflow-y-auto scrollbar-wa bg-white">
+
           {filteredHospitals.length === 0 ? (
             <div className="p-4 sm:p-6 text-center text-gray-500">
               <MessageCircle className="w-8 h-8 sm:w-12 sm:h-12 mx-auto mb-3 text-gray-300" />
@@ -650,7 +699,8 @@ messages.slice().reverse().forEach((msg) => {
             })()}
 
             {/* Messages */}
-            <div className="flex-1 overflow-y-auto p-2 sm:p-4 space-y-2 sm:space-y-4 bg-gray-50 lg:bg-white" style={{ minHeight: 0, backgroundImage: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23f0f0f0" fill-opacity="0.1"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")'}}>
+           <div className="flex-1 overflow-y-auto scrollbar-wa p-2 sm:p-4 space-y-2 sm:space-y-4 bg-gray-50 lg:bg-white"
+ style={{ minHeight: 0, backgroundImage: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23f0f0f0" fill-opacity="0.1"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")'}}>
               {messagesLoading ? (
                 <div className="flex items-center justify-center h-full">
                   <div className="animate-spin rounded-full h-6 w-6 sm:h-8 sm:w-8 border-b-2 border-blue-600"></div>
@@ -683,7 +733,8 @@ messages.slice().reverse().forEach((msg) => {
                             {message.sender_hospital?.name || 'Hospital'}
                           </p>
                         )}
-                        <p className="text-sm leading-relaxed">{message.content}</p>
+                       <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">{message.content}</p>
+
                         <div className={`flex items-center justify-end mt-1 space-x-1 ${
                           isOwn ? 'text-white/70' : 'text-gray-500'
                         }`}>
@@ -708,17 +759,29 @@ messages.slice().reverse().forEach((msg) => {
             </div>
 
             {/* Message Input */}
-            <form onSubmit={handleSendMessage} className="p-3 sm:p-4 border-t border-gray-200 bg-white">
+          <form ref={formRef} onSubmit={handleSendMessage} className="p-2 sm:p-3 border-t border-gray-200 bg-gray-50">
+
+
               <div className="flex items-end space-x-2 sm:space-x-3">
-                <input
-                  type="text"
-                  value={messageText}
-                  onChange={(e) => setMessageText(e.target.value)}
-                  placeholder="Escribe un mensaje"
-                  disabled={sendingMessage || isSubmitting}
-                  autoComplete="off"
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 text-sm bg-gray-50 resize-none max-h-20"
-                />
+              <div className="flex-1 flex items-center bg-gray-100 border border-gray-200 rounded-3xl px-3 sm:px-4 py-2">
+  <textarea
+    ref={textareaRef}
+    value={messageText}
+    onChange={(e) => setMessageText(e.target.value)}
+    rows={1}
+    placeholder="Escribe un mensaje"
+className="w-full bg-transparent text-sm sm:text-base leading-5 outline-none resize-none max-h-44 min-h-[36px] placeholder-gray-400 text-gray-900 whitespace-pre-wrap scrollbar-wa"
+    onKeyDown={(e) => {
+      // Enter envía; Shift+Enter inserta salto de línea (estilo WhatsApp)
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        formRef.current?.requestSubmit();
+      }
+    }}
+  />
+</div>
+
+
                 <button
                   type="submit"
                   disabled={!messageText.trim() || sendingMessage || isSubmitting}
