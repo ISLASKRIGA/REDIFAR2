@@ -156,7 +156,7 @@ const goTo = (tab: typeof tabsOrder[number]) => {
   {...swipeBind}
 >
   <div className="relative min-h-[60vh]">
-    <AnimatePresence mode="wait" custom={slideDirection}>
+<AnimatePresence mode="wait" custom={slideDirection} initial={false}>
       <motion.div
         key={activeTab}
         custom={slideDirection}
