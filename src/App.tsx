@@ -22,14 +22,14 @@ function App() {
   const [showAuthForm, setShowAuthForm] = useState(false);
 
   // Orden de pestañas que existen en el switch
-  const tabsOrder: Array<'dashboard' | 'solicitudes' | 'insumos-disponibles' | 'hospitales' | 'transferencias' | 'mensajes'> = [
-    'dashboard',
-    'solicitudes',
-    'insumos-disponibles',
-    'hospitales',
-    'transferencias',
-    'mensajes',
-  ];
+ const tabsOrder: Array<'dashboard' | 'hospitales' | 'solicitudes' | 'mensajes'> = [
+  'dashboard',
+  'hospitales',
+  'solicitudes',
+   'insumos-disponibles',
+  'mensajes',
+];
+
 
   const goTo = (tab: typeof tabsOrder[number]) => setActiveTab(tab);
 
