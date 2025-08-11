@@ -164,24 +164,22 @@ const goTo = (tab: typeof tabsOrder[number]) => {
         animate="center"
         exit="exit"
         variants={{
-          enter: (dir: 1 | -1) => ({
-            x: dir === 1 ? '100%' : '-100%',
-            opacity: 0.2,
-            position: 'absolute',
-            inset: 0,
-          }),
-          center: {
-            x: '0%',
-            opacity: 1,
-            position: 'relative',
-          },
-          exit: (dir: 1 | -1) => ({
-            x: dir === 1 ? '-30%' : '30%',
-            opacity: 0,
-            position: 'absolute',
-            inset: 0,
-          }),
-        }}
+  enter: (dir: 1 | -1) => ({
+    x: dir === 1 ? '100%' : '-100%', // entra desde fuera de pantalla
+    position: 'absolute',
+    inset: 0,
+  }),
+  center: {
+    x: '0%',                         // queda en su lugar
+    position: 'relative',
+  },
+  exit: (dir: 1 | -1) => ({
+    x: dir === 1 ? '-100%' : '100%', // sale completamente, sin fade
+    position: 'absolute',
+    inset: 0,
+  }),
+}}
+
         transition={{ duration: 0.28, ease: 'easeOut' }}
         className="w-full"
       >
