@@ -25,6 +25,9 @@ const MessageListener = () => {
       // ✅ Solo si tu hospital RECIBE el mensaje
       const isIncoming = newMessage.recipient_hospital_id === currentHospital.id;
       if (!isIncoming) return;
+      // 🔔🔊📳 Sonido + vibración en mensajes entrantes
+alertNewMessage();
+
 
       const otherHospitalId = newMessage.sender_hospital_id;
 // 📝 Guardar último mensaje (entrada o salida) en localStorage
