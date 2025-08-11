@@ -21,7 +21,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [showAuthForm, setShowAuthForm] = useState(false);
 
-  // Orden de pestañas (coincide con los case del switch)
+  // Orden de pestañas que existen en el switch
   const tabsOrder: Array<'dashboard' | 'solicitudes' | 'insumos-disponibles' | 'hospitales' | 'transferencias' | 'mensajes'> = [
     'dashboard',
     'solicitudes',
@@ -43,7 +43,7 @@ function App() {
     if (i > 0) goTo(tabsOrder[i - 1]);
   };
 
-  // Habilitar sólo en pantallas pequeñas (<= 640px)
+  // Habilitar swipe sólo en pantallas pequeñas (<= 640px)
   const isMobile = typeof window !== 'undefined'
     ? window.matchMedia('(max-width: 640px)').matches
     : false;
@@ -67,7 +67,7 @@ function App() {
     }, 100);
   };
 
-  // Mostrar pantalla de carga mientras se verifica autenticación
+  // Pantalla de carga mientras se verifica autenticación
   if (authLoading) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -119,12 +119,12 @@ function App() {
     }
   };
 
-  // Handlers de swipe (fuera del switch, disponibles para <main>)
+  // Handlers de swipe (fuera del switch)
   const swipeBind = useSwipeNavigation({
     onSwipeLeft: goNextTab,
     onSwipeRight: goPrevTab,
-    minDistance: 48,                     // sensibilidad del gesto
-    enabled: isMobile && activeTab !== 'mensajes', // desactivar en chat para evitar conflictos
+    minDistance: 48,
+    enabled: isMobile && activeTab !== 'mensajes', // evita conflictos al escribir en el chat
   });
 
   return (
