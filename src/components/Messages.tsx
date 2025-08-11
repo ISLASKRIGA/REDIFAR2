@@ -739,15 +739,22 @@ messages.slice().reverse().forEach((msg) => {
             {/* Message Input */}
             <form onSubmit={handleSendMessage} className="p-3 sm:p-4 border-t border-gray-200 bg-white">
               <div className="flex items-end space-x-2 sm:space-x-3">
-                <input
-                  type="text"
-                  value={messageText}
-                  onChange={(e) => setMessageText(e.target.value)}
-                  placeholder="Escribe un mensaje"
-                  disabled={sendingMessage || isSubmitting}
-                  autoComplete="off"
-                  className="flex-1 px-4 py-3 border border-gray-300 rounded-full focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:opacity-50 text-sm bg-gray-50 resize-none max-h-20"
-                />
+               <textarea
+  ref={textareaRef}
+  value={messageText}
+  onChange={(e) => setMessageText(e.target.value)}
+  rows={1}
+  placeholder="Escribe un mensaje"
+  className="w-full bg-white text-sm sm:text-base leading-5 px-4 py-2 rounded-2xl outline-none resize-none max-h-44 min-h-[40px] whitespace-pre-wrap"
+  onKeyDown={(e) => {
+    // Enter envía; Shift+Enter hace salto de línea (estilo WhatsApp)
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend(); // usa aquí tu misma función que dispara el envío del botón
+    }
+  }}
+/>
+
                 <button
                   type="submit"
                   disabled={!messageText.trim() || sendingMessage || isSubmitting}
