@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSwipeNavigation } from './hooks/useSwipeNavigation';
-
+import { AnimatePresence, motion } from 'framer-motion';
 import { HeroDemo } from './components/ui/demo';
 import { useAuth } from './hooks/useAuth';
 import { useHospitals } from './hooks/useHospitals';
@@ -19,6 +19,8 @@ function App() {
   const { user, loading: authLoading } = useAuth();
   const { hospitals, loading: hospitalsLoading } = useHospitals();
   const [activeTab, setActiveTab] = useState<'dashboard' | 'solicitudes' | 'insumos-disponibles' | 'hospitales' | 'transferencias' | 'mensajes'>('dashboard');
+  const [slideDirection, setSlideDirection] = useState<1 | -1>(1);
+
   const [showAuthForm, setShowAuthForm] = useState(false);
 
   // Orden de pestañas que existen en el switch
@@ -31,17 +33,34 @@ function App() {
 ];
 
 
-  const goTo = (tab: typeof tabsOrder[number]) => setActiveTab(tab);
+const goTo = (tab: typeof tabsOrder[number]) => {
+  const currentIndex = tabsOrder.indexOf(activeTab as any);
+  const nextIndex = tabsOrder.indexOf(tab as any);
+  if (currentIndex !== -1 && nextIndex !== -1) {
+    setSlideDirection(nextIndex > currentIndex ? 1 : -1);
+  }
+  setActiveTab(tab);
+};
 
-  const goNextTab = () => {
-    const i = tabsOrder.indexOf(activeTab);
-    if (i < tabsOrder.length - 1) goTo(tabsOrder[i + 1]);
-  };
+ const goNextTab = () => {
+  const i = tabsOrder.indexOf(activeTab as any);
+  if (i === -1) return; // si la pestaña actual no está en tabsOrder, no hacer swipe
+  if (i < tabsOrder.length - 1) {
+    setSlideDirection(1);
+    goTo(tabsOrder[i + 1]);
+  }
+};
 
-  const goPrevTab = () => {
-    const i = tabsOrder.indexOf(activeTab);
-    if (i > 0) goTo(tabsOrder[i - 1]);
-  };
+
+ const goPrevTab = () => {
+  const i = tabsOrder.indexOf(activeTab as any);
+  if (i === -1) return; // si la pestaña actual no está en tabsOrder, no hacer swipe
+  if (i > 0) {
+    setSlideDirection(-1);
+    goTo(tabsOrder[i - 1]);
+  }
+};
+
 
   // Habilitar swipe sólo en pantallas pequeñas (<= 640px)
   const isMobile = typeof window !== 'undefined'
@@ -53,7 +72,7 @@ function App() {
     onSwipeLeft: goNextTab,
     onSwipeRight: goPrevTab,
     minDistance: 48,
-    enabled: isMobile && activeTab !== 'mensajes', // evita conflictos al escribir en el chat
+  enabled: isMobile,
   });
 
   // ✅ Solicitar permisos de notificaciones del navegador
@@ -130,14 +149,48 @@ function App() {
   return (
     <div className="min-h-screen bg-gray-50 pt-14 sm:pt-16 pb-20 lg:pb-0">
       <Header />
-      <Navigation activeTab={activeTab} setActiveTab={setActiveTab} />
+<Navigation activeTab={activeTab} setActiveTab={goTo} />
       <MessageListener /> {/* Escucha global de nuevos mensajes */}
-      <main
-        className="lg:ml-64 px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-4 lg:pb-8 touch-pan-y"
-        {...swipeBind}
+     <main
+  className="lg:ml-64 px-4 sm:px-6 lg:px-8 py-4 sm:py-8 pb-4 lg:pb-8 touch-pan-y overflow-hidden"
+  {...swipeBind}
+>
+  <div className="relative min-h-[60vh]">
+    <AnimatePresence mode="wait" custom={slideDirection}>
+      <motion.div
+        key={activeTab}
+        custom={slideDirection}
+        initial="enter"
+        animate="center"
+        exit="exit"
+        variants={{
+          enter: (dir: 1 | -1) => ({
+            x: dir === 1 ? '100%' : '-100%',
+            opacity: 0.2,
+            position: 'absolute',
+            inset: 0,
+          }),
+          center: {
+            x: '0%',
+            opacity: 1,
+            position: 'relative',
+          },
+          exit: (dir: 1 | -1) => ({
+            x: dir === 1 ? '-30%' : '30%',
+            opacity: 0,
+            position: 'absolute',
+            inset: 0,
+          }),
+        }}
+        transition={{ duration: 0.28, ease: 'easeOut' }}
+        className="w-full"
       >
         {renderContent()}
-      </main>
+      </motion.div>
+    </AnimatePresence>
+  </div>
+</main>
+
     </div>
   );
 }
