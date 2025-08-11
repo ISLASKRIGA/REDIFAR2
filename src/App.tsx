@@ -18,7 +18,7 @@ import MessageListener from './components/MessageListener';
 function App() {
   const { user, loading: authLoading } = useAuth();
   const { hospitals, loading: hospitalsLoading } = useHospitals();
-  const [activeTab, setActiveTab] = useState('dashboard');
+  const [activeTab, setActiveTab] = useState<'dashboard' | 'solicitudes' | 'insumos-disponibles' | 'hospitales' | 'transferencias' | 'mensajes'>('dashboard');
   const [showAuthForm, setShowAuthForm] = useState(false);
 
   // Orden de pestañas que existen en el switch
@@ -34,12 +34,12 @@ function App() {
   const goTo = (tab: typeof tabsOrder[number]) => setActiveTab(tab);
 
   const goNextTab = () => {
-    const i = tabsOrder.indexOf(activeTab as typeof tabsOrder[number]);
+    const i = tabsOrder.indexOf(activeTab);
     if (i < tabsOrder.length - 1) goTo(tabsOrder[i + 1]);
   };
 
   const goPrevTab = () => {
-    const i = tabsOrder.indexOf(activeTab as typeof tabsOrder[number]);
+    const i = tabsOrder.indexOf(activeTab);
     if (i > 0) goTo(tabsOrder[i - 1]);
   };
 
@@ -47,6 +47,14 @@ function App() {
   const isMobile = typeof window !== 'undefined'
     ? window.matchMedia('(max-width: 640px)').matches
     : false;
+
+  // Handlers de swipe (colócalo ANTES de cualquier return condicional)
+  const swipeBind = useSwipeNavigation({
+    onSwipeLeft: goNextTab,
+    onSwipeRight: goPrevTab,
+    minDistance: 48,
+    enabled: isMobile && activeTab !== 'mensajes', // evita conflictos al escribir en el chat
+  });
 
   // ✅ Solicitar permisos de notificaciones del navegador
   useEffect(() => {
@@ -118,14 +126,6 @@ function App() {
         return <Dashboard onNavigate={goTo} />;
     }
   };
-
-  // Handlers de swipe (fuera del switch)
-  const swipeBind = useSwipeNavigation({
-    onSwipeLeft: goNextTab,
-    onSwipeRight: goPrevTab,
-    minDistance: 48,
-    enabled: isMobile && activeTab !== 'mensajes', // evita conflictos al escribir en el chat
-  });
 
   return (
     <div className="min-h-screen bg-gray-50 pt-14 sm:pt-16 pb-20 lg:pb-0">
