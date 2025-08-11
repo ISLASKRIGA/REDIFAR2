@@ -192,6 +192,18 @@ setLastMessagesMap((prev) => {
   const hospitalColor = useHospitalColor(currentHospital?.id);
   
   const [messageText, setMessageText] = useState('');
+  const textareaRef = useRef<HTMLTextAreaElement | null>(null);
+
+// Auto-ajustar altura como WhatsApp
+useEffect(() => {
+  const el = textareaRef.current;
+  if (!el) return;
+  el.style.height = '0px';
+  // límite de altura (≈ 6 líneas). Ajusta 176 si quieres más/menos.
+  const newHeight = Math.min(el.scrollHeight, 176);
+  el.style.height = newHeight + 'px';
+}, [messageText]);
+
   useEffect(() => {
   const draft = consumeMessageDraft();
   if (draft) setMessageText(draft);
