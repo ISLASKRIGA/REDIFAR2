@@ -392,12 +392,13 @@ useEffect(() => {
     // Enviar mensaje sobre la transferencia
     const transferMessage = `🔄 PROPUESTA DE TRANSFERENCIA\n\nMedicamento: ${transferData.medicationName}\nCantidad: ${transferData.quantity} unidades\n\n¿Estás de acuerdo con esta transferencia? Responde "ACEPTO" para confirmar.`;
     
-    await sendMessage({
-      sender_hospital_id: currentHospital.id,
-      recipient_hospital_id: selectedHospital,
-      content: transferMessage,
-      message_type: 'text'
-    });
+   await sendMessage({
+  sender_hospital_id: currentHospital.id,
+  recipient_hospital_id: selectedHospital,
+  content: transferMessage,
+  messages_type: 'text'
+});
+
 
     setShowTransferModal(false);
     setTransferData({ medicationName: '', quantity: 0, recipientHospitalId: '' });
