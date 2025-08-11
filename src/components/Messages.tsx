@@ -415,12 +415,13 @@ useEffect(() => {
 
     // Enviar mensaje de confirmación
     if (currentHospital && selectedHospital) {
-      await sendMessage({
-        sender_hospital_id: currentHospital.id,
-        recipient_hospital_id: selectedHospital,
-        content: "✅ ACEPTO la transferencia propuesta. La transferencia está ahora confirmada y puede proceder.",
-        message_type: 'text'
-      });
+     await sendMessage({
+  sender_hospital_id: currentHospital.id,
+  recipient_hospital_id: selectedHospital,
+  content: "✅ ACEPTO la transferencia propuesta. La transferencia está ahora confirmada y puede proceder.",
+  messages_type: 'text'
+});
+
     }
   }, [currentHospital, selectedHospital, sendMessage]);
 
