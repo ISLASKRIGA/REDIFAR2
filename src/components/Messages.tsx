@@ -768,7 +768,7 @@ messages.slice().reverse().forEach((msg) => {
     onChange={(e) => setMessageText(e.target.value)}
     rows={1}
     placeholder="Escribe un mensaje"
-    className="w-full bg-transparent text-sm sm:text-base leading-5 outline-none resize-none max-h-44 min-h-[24px] placeholder-gray-400 text-gray-900 whitespace-pre-wrap overflow-y-auto"
+className="w-full bg-transparent text-sm sm:text-base leading-5 outline-none resize-none max-h-44 min-h-[36px] placeholder-gray-400 text-gray-900 whitespace-pre-wrap"
     onKeyDown={(e) => {
       // Enter envía; Shift+Enter inserta salto de línea (estilo WhatsApp)
       if (e.key === 'Enter' && !e.shiftKey) {
