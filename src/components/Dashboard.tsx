@@ -75,7 +75,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ onNavigate }) => {
       change: '+' + Math.floor(totalOffers * 0.15), 
       trend: 'up', 
       icon: Package,
-      onClick: () => onNavigate('ofertas')
+      onClick: () => onNavigate('insumos-disponibles')
     },
     { 
       title: 'Hospitales Conectados', 
