@@ -223,3 +223,35 @@
 .message-input:focus {
   background-color: white;
 }
+/* ===== Scrollbar tipo WhatsApp ===== */
+.scrollbar-wa{
+  /* Firefox */
+  scrollbar-width: thin;
+  scrollbar-color: rgba(95,99,104,.35) transparent;
+}
+
+/* WebKit (Chrome, Edge, Opera, Safari) */
+.scrollbar-wa::-webkit-scrollbar{
+  width: 8px;
+  height: 8px;
+}
+.scrollbar-wa::-webkit-scrollbar-track{
+  background: transparent;
+}
+.scrollbar-wa::-webkit-scrollbar-thumb{
+  background-color: rgba(95,99,104,.35); /* gris translúcido */
+  border-radius: 9999px;
+  border: 2px solid transparent; /* deja espacio (como overlay) */
+  background-clip: padding-box;
+}
+.scrollbar-wa:hover::-webkit-scrollbar-thumb{
+  background-color: rgba(95,99,104,.5);
+}
+.scrollbar-wa::-webkit-scrollbar-corner{
+  background: transparent;
+}
+
+/* más delgado en pantallas chicas */
+@media (max-width: 640px){
+  .scrollbar-wa::-webkit-scrollbar{ width: 4px; height: 4px; }
+}
