@@ -26,7 +26,7 @@ export const Header: React.FC = () => {
     <header className={`${hospitalColor.primary} shadow-lg border-b-4 ${hospitalColor.border} fixed top-0 left-0 right-0 z-40`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-14 sm:h-16">
-         <div className="flex items-center">
+          <div className="flex items-center">
   <div className="p-0.5 rounded-full bg-white/20 mr-3 flex items-center justify-center overflow-hidden ring-1 ring-white/30 backdrop-blur-sm">
     <img
       src="/logos/LogoRETMI_SFond.png"
@@ -35,6 +35,7 @@ export const Header: React.FC = () => {
     />
   </div>
 
+ <div className="flex items-center gap-2 sm:gap-3">
   <div>
     <h1 className="text-lg sm:text-xl font-bold text-white">RETMI</h1>
     {userHospital && (
@@ -43,14 +44,13 @@ export const Header: React.FC = () => {
       </p>
     )}
   </div>
-</div>
-
 
   {/* 🔔 Campana a la derecha del nombre */}
-  <div className="ml-3">
+  <div className="ml-1 sm:ml-2">
     <NotificationCenter />
   </div>
 </div>
+
 
 
 
