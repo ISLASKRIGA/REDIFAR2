@@ -97,6 +97,8 @@ if ('Notification' in window && Notification.permission === 'granted') {
           event: 'INSERT',
           schema: 'public',
           table: 'mensajes',
+                filter: `recipient_hospital_id=eq.${currentHospital.id}`, // 👈 solo lo que te toca
+
         },
         handler
       )
