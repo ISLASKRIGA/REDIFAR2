@@ -364,27 +364,28 @@ useEffect(() => {
     setIsSubmitting(true);
     
     try {
-      setMessageText('');
-      setTimeout(scrollToBottom, 50);
-      
-      const { error } = await sendMessage({
+     const trimmed = messageText.trim();
+setMessageText('');
+setTimeout(scrollToBottom, 50);
+
+const { error } = await sendMessage({
   sender_hospital_id: currentHospital.id,
   recipient_hospital_id: selectedHospital,
-  content: messageText.trim(),
+  content: trimmed,
   messages_type: 'text'
 });
 
-
-      if (error) {
-        setMessageText(messageText.trim());
-      }
-      
-      // Refresh messages after sending
-   if (!error && selectedHospital) {
-  setHospitalOrder((prevOrder) => {
-    const newOrder = [selectedHospital, ...prevOrder.filter(id => id !== selectedHospital)];
-    localStorage.setItem('conversationOrder', JSON.stringify(newOrder));
-    return newOrder;
+// 🔁 Si se envió bien, actualiza "lastMessages" para que la hora aparezca de inmediato
+if (!error && selectedHospital) {
+  const nowIso = new Date().toISOString();
+  setLastMessagesMap(prev => {
+    const updated = {
+      ...prev,
+      [selectedHospital]: { text: trimmed, timestamp: nowIso }
+    };
+    localStorage.setItem('lastMessages', JSON.stringify(updated));
+    window.dispatchEvent(new Event('lastMessagesUpdated'));
+    return updated;
   });
 }
 
