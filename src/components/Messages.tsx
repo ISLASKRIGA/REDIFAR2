@@ -224,6 +224,7 @@ useEffect(() => {
     setSelectedHospital(target);
     if (typeof fetchMessages === 'function') fetchMessages(target);
   }
+}, []);
 
 
 
