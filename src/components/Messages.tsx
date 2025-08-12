@@ -476,7 +476,15 @@ useEffect(() => {
     const date = new Date(timestamp);
     const now = new Date();
     const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-    
+    // Devuelve el timestamp del último mensaje para un hospital,
+// tomando prioridad si justo estás dentro de esa conversación.
+const getLastTimestampFor = useCallback((hospitalId: string) => {
+  if (selectedHospital === hospitalId && messages.length > 0) {
+    return messages[messages.length - 1].created_at; // el más reciente en la vista actual
+  }
+  return lastMessagesMap[hospitalId]?.timestamp || null; // último conocido desde localStorage
+}, [selectedHospital, messages, lastMessagesMap]);
+
     if (diffInHours < 24) {
       return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
     } else {
