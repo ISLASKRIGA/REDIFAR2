@@ -277,6 +277,17 @@ useEffect(() => {
 
     isProcessingExternalMessage.current = false;
     await fetchMessages(selectedHospital);
+    // 🔽 Sincroniza limpieza del contador en localStorage
+try {
+  const raw = localStorage.getItem('unreadCountMap') || '{}';
+  const map = JSON.parse(raw);
+  if (map[selectedHospital]) {
+    map[selectedHospital] = 0;
+    localStorage.setItem('unreadCountMap', JSON.stringify(map));
+    window.dispatchEvent(new Event('unreadMessagesUpdated'));
+  }
+} catch {/* no-op */}
+
 
     const updated = JSON.parse(localStorage.getItem('conversationOrder') || '[]');
     setHospitalOrder(updated);
