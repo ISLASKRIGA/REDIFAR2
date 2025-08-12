@@ -259,24 +259,24 @@ requestAnimationFrame(() => {
 
 
   // Load messages when conversation is selected
-  useEffect(() => {
+ // Load messages when conversation is selected
+useEffect(() => {
   if (!selectedHospital) return;
 
   const fetchAndMark = async () => {
-    markAsRead();
+    await markAsRead(selectedHospital); // 👈 PASA EL ID AQUÍ
     window.location.hash = selectedHospital;
 
     isProcessingExternalMessage.current = false;
-
     await fetchMessages(selectedHospital);
 
-    // 👇 🔁 Carga el orden actualizado del localStorage (por si cambió fuera de Messages.tsx)
     const updated = JSON.parse(localStorage.getItem('conversationOrder') || '[]');
     setHospitalOrder(updated);
   };
 
   fetchAndMark();
 }, [selectedHospital]);
+
 
 
 
