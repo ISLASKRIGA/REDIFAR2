@@ -172,13 +172,7 @@ setLastMessagesMap((prev) => {
     lastMessage.sender_hospital_id !== currentHospital.id
   ) {
     setLastProcessedMessageId(lastMessage.id);
-    setUnreadCountMap((prev) => {
-  const prevCount = prev[partnerId] || 0;
-  return {
-    ...prev,
-    [partnerId]: prevCount + 1
-  };
-});
+    
 
     setUnreadMap((prev) => ({ ...prev, [partnerId]: true }));
 
