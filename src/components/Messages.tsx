@@ -629,10 +629,11 @@ messages.slice().reverse().forEach((msg) => {
   {/* Hora del último mensaje */}
   <span className="text-[11px] leading-none text-gray-400">
   {(() => {
-    const ts = lastMessagesMap[hospital.id]?.timestamp;
+    const ts = getLastTimestampFor(hospital.id);
     return ts ? formatTime(ts) : '';
   })()}
 </span>
+
 
 
   {/* Badge de no leídos (debajo de la hora) */}
