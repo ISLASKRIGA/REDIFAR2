@@ -42,19 +42,27 @@ export const useUnreadMessages = () => {
 
     const ch = supabase
       .channel(`unread-${currentHospital.id}`)
-      .on(
-        'postgres_changes',
-        { event: 'INSERT', schema: 'public', table: 'mensajes' },
-        (payload) => {
-          const m = payload.new as any;
-          if (m.recipient_hospital_id === currentHospital.id && m.read_at == null) {
-            setByHospital(prev => ({
-              ...prev,
-              [m.sender_hospital_id]: (prev[m.sender_hospital_id] || 0) + 1
-            }));
-          }
-        }
-      )
+   .on(
+  'postgres_changes',
+  {
+    event: 'INSERT',
+    schema: 'public',
+    table: 'mensajes',
+    // 🔴 FILTRO por receptor para asegurar que nos llegue siempre
+    filter: `recipient_hospital_id=eq.${currentHospital.id}`
+  },
+  (payload) => {
+    const m = payload.new as any;
+    // solo cuenta si llega sin leer
+    if (m.read_at == null) {
+      setByHospital(prev => ({
+        ...prev,
+        [m.sender_hospital_id]: (prev[m.sender_hospital_id] || 0) + 1
+      }));
+    }
+  }
+)
+
       .on(
         'postgres_changes',
         { event: 'UPDATE', schema: 'public', table: 'mensajes' },
