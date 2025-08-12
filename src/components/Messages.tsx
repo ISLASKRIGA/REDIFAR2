@@ -618,14 +618,13 @@ messages.slice().reverse().forEach((msg) => {
 </div>
 
                         </div>
-                        <div className="flex items-center justify-between mt-2 lg:hidden">
-                          <div className="flex items-center text-xs text-gray-500">
-                            <span>{hospital.city}</span>
-                          </div>
-                          <div className="flex items-center text-xs text-gray-400">
-                            <span>12:30</span>
-                          </div>
-                        </div>
+                       <div className="flex items-center justify-between mt-2 lg:hidden">
+  <div className="flex items-center text-xs text-gray-500">
+    <span>{hospital.city}</span>
+  </div>
+  {/* La hora ya se muestra en la columna derecha arriba */}
+</div>
+
                       </div>
                     </div>
                   </div>
