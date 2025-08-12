@@ -546,11 +546,21 @@ messages.slice().reverse().forEach((msg) => {
                 return (
                   <div
                     key={hospital.id}
-                   onClick={() => {
+                  onClick={() => {
   setSelectedHospital(hospital.id);
   setUnreadMap(prev => ({ ...prev, [hospital.id]: false }));
   setUnreadCountMap(prev => ({ ...prev, [hospital.id]: 0 }));
+
+  // 🔽 Persistir limpieza y notificar a toda la app
+  try {
+    const raw = localStorage.getItem('unreadCountMap') || '{}';
+    const map = JSON.parse(raw);
+    map[hospital.id] = 0;
+    localStorage.setItem('unreadCountMap', JSON.stringify(map));
+    window.dispatchEvent(new Event('unreadMessagesUpdated'));
+  } catch {/* no-op */}
 }}
+
 
 
                     className={`p-3 sm:p-4 cursor-pointer transition-colors border-l-4 ${
