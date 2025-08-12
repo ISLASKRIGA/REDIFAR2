@@ -60,21 +60,22 @@ const checkIsMobile = () => setIsMobile(window.innerWidth < 1024);
   const [unreadCountMap, setUnreadCountMap] = useState<Record<string, number>>({});
 const [lastMessagesMap, setLastMessagesMap] = useState<Record<string, { text: string; timestamp: string }>>({});
 
-/// 🔁 Escuchar y cargar contadores de no leídos desde localStorage
+// 🔁 Escuchar y cargar últimos mensajes desde localStorage
 useEffect(() => {
-  const loadUnreadCounts = () => {
+  const updateLastMessages = () => {
     try {
-      const raw = localStorage.getItem('unreadCountMap') || '{}';
-      setUnreadCountMap(JSON.parse(raw));
+      const stored = localStorage.getItem('lastMessages');
+      setLastMessagesMap(stored ? JSON.parse(stored) : {});
     } catch {
-      setUnreadCountMap({});
+      setLastMessagesMap({});
     }
   };
 
-  loadUnreadCounts();
-  window.addEventListener('unreadMessagesUpdated', loadUnreadCounts);
-  return () => window.removeEventListener('unreadMessagesUpdated', loadUnreadCounts);
+  updateLastMessages();
+  window.addEventListener('lastMessagesUpdated', updateLastMessages);
+  return () => window.removeEventListener('lastMessagesUpdated', updateLastMessages);
 }, []);
+
 
 useEffect(() => {
   const loadOrder = () => {
