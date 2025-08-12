@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Send, Search, MessageCircle, Users, Clock, CheckCircle2, Circle, Plus, ArrowRightLeft, CheckCheck } from 'lucide-react';
+import { Send, Search, MessageCircle, Users, Clock, Check, Plus, ArrowRightLeft, CheckCheck } from 'lucide-react';
+
 import { useAuth } from '../hooks/useAuth';
 import { useHospitals } from '../hooks/useHospitals';
 import { useMessages } from '../hooks/useMessages';
@@ -62,9 +63,11 @@ const [lastMessagesMap, setLastMessagesMap] = useState<Record<string, { text: st
 // 🔁 Escuchar y cargar últimos mensajes desde localStorage
 useEffect(() => {
   const updateLastMessages = () => {
-    const stored = localStorage.getItem('lastMessages');
-    if (stored) {
-      setLastMessagesMap(JSON.parse(stored));
+    try {
+      const stored = localStorage.getItem('lastMessages');
+      setLastMessagesMap(stored ? JSON.parse(stored) : {});
+    } catch {
+      setLastMessagesMap({});
     }
   };
 
@@ -72,6 +75,7 @@ useEffect(() => {
   window.addEventListener('lastMessagesUpdated', updateLastMessages);
   return () => window.removeEventListener('lastMessagesUpdated', updateLastMessages);
 }, []);
+
 
 useEffect(() => {
   const loadOrder = () => {
@@ -169,13 +173,7 @@ setLastMessagesMap((prev) => {
     lastMessage.sender_hospital_id !== currentHospital.id
   ) {
     setLastProcessedMessageId(lastMessage.id);
-    setUnreadCountMap((prev) => {
-  const prevCount = prev[partnerId] || 0;
-  return {
-    ...prev,
-    [partnerId]: prevCount + 1
-  };
-});
+    
 
     setUnreadMap((prev) => ({ ...prev, [partnerId]: true }));
 
@@ -205,9 +203,23 @@ const resizeComposer = () => {
 };
 
 // Auto-ajustar altura como WhatsApp
+// Auto-ajustar altura como WhatsApp (ya lo tienes)
 useEffect(() => {
   resizeComposer();
 }, [messageText]);
+
+// 👇 NUEVO: cuando abres/cambias de conversación
+useEffect(() => {
+  if (!selectedHospital) return;
+  // enfoca sin provocar scroll raro
+  try {
+    (textareaRef.current as HTMLTextAreaElement | null)?.focus({ preventScroll: true } as any);
+  } catch {
+    textareaRef.current?.focus();
+  }
+  resizeComposer();
+}, [selectedHospital]);
+
 
 
 
@@ -225,10 +237,7 @@ useEffect(() => {
     if (typeof fetchMessages === 'function') fetchMessages(target);
   }
 }, []);
-requestAnimationFrame(() => {
-  textareaRef.current?.focus();
-  resizeComposer();
-});
+
 
 
   const [searchTerm, setSearchTerm] = useState('');
@@ -259,24 +268,35 @@ requestAnimationFrame(() => {
 
 
   // Load messages when conversation is selected
-  useEffect(() => {
+ // Load messages when conversation is selected
+useEffect(() => {
   if (!selectedHospital) return;
 
   const fetchAndMark = async () => {
-    markAsRead();
+    await markAsRead(selectedHospital); // 👈 PASA EL ID AQUÍ
     window.location.hash = selectedHospital;
 
     isProcessingExternalMessage.current = false;
-
     await fetchMessages(selectedHospital);
+    // 🔽 Sincroniza limpieza del contador en localStorage
+try {
+  const raw = localStorage.getItem('unreadCountMap') || '{}';
+  const map = JSON.parse(raw);
+  if (map[selectedHospital]) {
+    map[selectedHospital] = 0;
+    localStorage.setItem('unreadCountMap', JSON.stringify(map));
+    window.dispatchEvent(new Event('unreadMessagesUpdated'));
+  }
+} catch {/* no-op */}
 
-    // 👇 🔁 Carga el orden actualizado del localStorage (por si cambió fuera de Messages.tsx)
+
     const updated = JSON.parse(localStorage.getItem('conversationOrder') || '[]');
     setHospitalOrder(updated);
   };
 
   fetchAndMark();
 }, [selectedHospital]);
+
 
 
 
@@ -344,27 +364,28 @@ useEffect(() => {
     setIsSubmitting(true);
     
     try {
-      setMessageText('');
-      setTimeout(scrollToBottom, 50);
-      
-      const { error } = await sendMessage({
+     const trimmed = messageText.trim();
+setMessageText('');
+setTimeout(scrollToBottom, 50);
+
+const { error } = await sendMessage({
   sender_hospital_id: currentHospital.id,
   recipient_hospital_id: selectedHospital,
-  content: messageText.trim(),
+  content: trimmed,
   messages_type: 'text'
 });
 
-
-      if (error) {
-        setMessageText(messageText.trim());
-      }
-      
-      // Refresh messages after sending
-   if (!error && selectedHospital) {
-  setHospitalOrder((prevOrder) => {
-    const newOrder = [selectedHospital, ...prevOrder.filter(id => id !== selectedHospital)];
-    localStorage.setItem('conversationOrder', JSON.stringify(newOrder));
-    return newOrder;
+// 🔁 Si se envió bien, actualiza "lastMessages" para que la hora aparezca de inmediato
+if (!error && selectedHospital) {
+  const nowIso = new Date().toISOString();
+  setLastMessagesMap(prev => {
+    const updated = {
+      ...prev,
+      [selectedHospital]: { text: trimmed, timestamp: nowIso }
+    };
+    localStorage.setItem('lastMessages', JSON.stringify(updated));
+    window.dispatchEvent(new Event('lastMessagesUpdated'));
+    return updated;
   });
 }
 
@@ -464,6 +485,15 @@ useEffect(() => {
       return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
     }
   };
+// Devuelve el timestamp del último mensaje para un hospital
+const getLastTimestampFor = useCallback((hospitalId: string) => {
+  // Si estás dentro de esa conversación y hay mensajes cargados, usa el último real
+  if (selectedHospital === hospitalId && messages.length > 0) {
+    return messages[messages.length - 1].created_at;
+  }
+  // Si no, usa lo guardado en localStorage
+  return lastMessagesMap[hospitalId]?.timestamp || null;
+}, [selectedHospital, messages, lastMessagesMap]);
 
   const getHospitalInitials = (name: string) => {
     return name.split(' ').map(word => word.charAt(0)).join('').substring(0, 2).toUpperCase();
@@ -538,11 +568,21 @@ messages.slice().reverse().forEach((msg) => {
                 return (
                   <div
                     key={hospital.id}
-                   onClick={() => {
+                  onClick={() => {
   setSelectedHospital(hospital.id);
   setUnreadMap(prev => ({ ...prev, [hospital.id]: false }));
   setUnreadCountMap(prev => ({ ...prev, [hospital.id]: 0 }));
+
+  // 🔽 Persistir limpieza y notificar a toda la app
+  try {
+    const raw = localStorage.getItem('unreadCountMap') || '{}';
+    const map = JSON.parse(raw);
+    map[hospital.id] = 0;
+    localStorage.setItem('unreadCountMap', JSON.stringify(map));
+    window.dispatchEvent(new Event('unreadMessagesUpdated'));
+  } catch {/* no-op */}
 }}
+
 
 
                     className={`p-3 sm:p-4 cursor-pointer transition-colors border-l-4 ${
@@ -566,14 +606,7 @@ messages.slice().reverse().forEach((msg) => {
   />
 </div>
 
-                      {unreadCountMap[hospital.id] > 0 && (
-  <div
-    className={`ml-auto mt-1 text-white text-xs font-bold rounded-full px-2 py-0.5 shadow-md ${hospitalColor.primary}`}
-    title={`${unreadCountMap[hospital.id]} mensaje(s) sin leer`}
-  >
-    {unreadCountMap[hospital.id]}
-  </div>
-)}
+                     
 
 
                       <div className="flex-1 min-w-0">
@@ -592,26 +625,37 @@ messages.slice().reverse().forEach((msg) => {
                               {hospital.city}, {hospital.state}
                             </p>
                           </div>
-                          <div className="text-right hidden lg:block">
-                            <span className="text-xs text-gray-400">
-                              12:30
-                            </span>
-                            <div className="mt-1">
-                              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                              {hospital.type === 'public' ? 'Público' : 
-                               hospital.type === 'private' ? 'Privado' : 'Universitario'}
-                              </span>
-                            </div>
-                          </div>
+                          {/* Columna derecha estilo WhatsApp: hora arriba y badge debajo */}
+<div className="ml-2 flex flex-col items-end justify-start min-w-[52px]">
+  {/* Hora del último mensaje */}
+  <span className="text-[11px] leading-none text-gray-400">
+  {(() => {
+    const ts = getLastTimestampFor(hospital.id);
+    return ts ? formatTime(ts) : '';
+  })()}
+</span>
+
+
+
+  {/* Badge de no leídos (debajo de la hora) */}
+  {unreadCountMap[hospital.id] > 0 && (
+    <span
+      className={`mt-2 min-w-[20px] h-5 px-1.5 rounded-full text-[10px] leading-5 text-center font-bold text-white ${hospitalColor.primary}`}
+      title={`${unreadCountMap[hospital.id]} mensaje(s) sin leer`}
+    >
+      {unreadCountMap[hospital.id] > 99 ? '99+' : unreadCountMap[hospital.id]}
+    </span>
+  )}
+</div>
+
                         </div>
-                        <div className="flex items-center justify-between mt-2 lg:hidden">
-                          <div className="flex items-center text-xs text-gray-500">
-                            <span>{hospital.city}</span>
-                          </div>
-                          <div className="flex items-center text-xs text-gray-400">
-                            <span>12:30</span>
-                          </div>
-                        </div>
+                       <div className="flex items-center justify-between mt-2 lg:hidden">
+  <div className="flex items-center text-xs text-gray-500">
+    <span>{hospital.city}</span>
+  </div>
+  {/* La hora ya se muestra en la columna derecha arriba */}
+</div>
+
                       </div>
                     </div>
                   </div>
@@ -737,20 +781,32 @@ messages.slice().reverse().forEach((msg) => {
                        <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">{message.content}</p>
 
                         <div className={`flex items-center justify-end mt-1 space-x-1 ${
-                          isOwn ? 'text-white/70' : 'text-gray-500'
-                        }`}>
-                          <span className="text-xs">
-                            {formatTime(message.created_at)}
-                          </span>
-                          {isOwn && !isOptimistic && (
-                            message.read_at ? 
-                              <CheckCircle2 className="w-3 h-3" title="Leído" /> : 
-                              <Circle className="w-3 h-3" title="Enviado" />
-                          )}
-                          {isOptimistic && (
-                            <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" title="Enviando..." />
-                          )}
-                        </div>
+  isOwn ? 'text-white/70' : 'text-gray-500'
+}`}>
+  <span className="text-xs">
+    {formatTime(message.created_at)}
+  </span>
+
+  {/* ⏳ Enviando (optimista) */}
+  {isOwn && isOptimistic && (
+    <div
+      className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin"
+      title="Enviando..."
+    />
+  )}
+
+  {/* ✓✓ Estados para mensajes propios con ID real */}
+  {isOwn && !isOptimistic && (
+    message.read_at ? (
+      // ✓✓ Leído (azul)
+      <CheckCheck className="w-3 h-3 text-blue-400" title="Leído" />
+    ) : (
+      // ✓✓ Entregado/guardado en servidor (gris)
+      <CheckCheck className="w-3 h-3 text-gray-300" title="Entregado" />
+    )
+  )}
+</div>
+
                       </div>
                     </div>
                   );
