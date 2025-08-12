@@ -618,10 +618,12 @@ messages.slice().reverse().forEach((msg) => {
 <div className="ml-2 flex flex-col items-end justify-start min-w-[52px]">
   {/* Hora del último mensaje */}
   <span className="text-[11px] leading-none text-gray-400">
-    {lastMessagesMap[hospital.id]?.timestamp
-      ? formatTime(lastMessagesMap[hospital.id].timestamp)
-      : ''}
-  </span>
+  {(() => {
+    const ts = lastMessagesMap[hospital.id]?.timestamp;
+    return ts ? formatTime(ts) : '';
+  })()}
+</span>
+
 
   {/* Badge de no leídos (debajo de la hora) */}
   {unreadCountMap[hospital.id] > 0 && (
