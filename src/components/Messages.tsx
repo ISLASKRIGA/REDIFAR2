@@ -597,17 +597,26 @@ messages.slice().reverse().forEach((msg) => {
                               {hospital.city}, {hospital.state}
                             </p>
                           </div>
-                          <div className="text-right hidden lg:block">
-                            <span className="text-xs text-gray-400">
-                              12:30
-                            </span>
-                            <div className="mt-1">
-                              <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full">
-                              {hospital.type === 'public' ? 'Público' : 
-                               hospital.type === 'private' ? 'Privado' : 'Universitario'}
-                              </span>
-                            </div>
-                          </div>
+                          {/* Columna derecha estilo WhatsApp: hora arriba y badge debajo */}
+<div className="ml-2 flex flex-col items-end justify-start min-w-[52px]">
+  {/* Hora del último mensaje */}
+  <span className="text-[11px] leading-none text-gray-400">
+    {lastMessagesMap[hospital.id]?.timestamp
+      ? formatTime(lastMessagesMap[hospital.id].timestamp)
+      : ''}
+  </span>
+
+  {/* Badge de no leídos (debajo de la hora) */}
+  {unreadCountMap[hospital.id] > 0 && (
+    <span
+      className={`mt-2 min-w-[20px] h-5 px-1.5 rounded-full text-[10px] leading-5 text-center font-bold text-white ${hospitalColor.primary}`}
+      title={`${unreadCountMap[hospital.id]} mensaje(s) sin leer`}
+    >
+      {unreadCountMap[hospital.id] > 99 ? '99+' : unreadCountMap[hospital.id]}
+    </span>
+  )}
+</div>
+
                         </div>
                         <div className="flex items-center justify-between mt-2 lg:hidden">
                           <div className="flex items-center text-xs text-gray-500">
