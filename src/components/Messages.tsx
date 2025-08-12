@@ -578,14 +578,7 @@ messages.slice().reverse().forEach((msg) => {
   />
 </div>
 
-                      {unreadCountMap[hospital.id] > 0 && (
-  <div
-    className={`ml-auto mt-1 text-white text-xs font-bold rounded-full px-2 py-0.5 shadow-md ${hospitalColor.primary}`}
-    title={`${unreadCountMap[hospital.id]} mensaje(s) sin leer`}
-  >
-    {unreadCountMap[hospital.id]}
-  </div>
-)}
+                     
 
 
                       <div className="flex-1 min-w-0">
