@@ -484,6 +484,15 @@ useEffect(() => {
       return date.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' });
     }
   };
+// Devuelve el timestamp del último mensaje para un hospital
+const getLastTimestampFor = useCallback((hospitalId: string) => {
+  // Si estás dentro de esa conversación y hay mensajes cargados, usa el último real
+  if (selectedHospital === hospitalId && messages.length > 0) {
+    return messages[messages.length - 1].created_at;
+  }
+  // Si no, usa lo guardado en localStorage
+  return lastMessagesMap[hospitalId]?.timestamp || null;
+}, [selectedHospital, messages, lastMessagesMap]);
 
   const getHospitalInitials = (name: string) => {
     return name.split(' ').map(word => word.charAt(0)).join('').substring(0, 2).toUpperCase();
