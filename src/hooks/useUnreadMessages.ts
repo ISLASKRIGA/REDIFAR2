@@ -35,6 +35,20 @@ export const useUnreadMessages = () => {
 
   // carga inicial
   useEffect(() => { refreshUnread(); }, [refreshUnread]);
+// 🔁 Recontar cuando el usuario regresa a la pestaña
+useEffect(() => {
+  const onVisible = () => {
+    if (document.visibilityState === 'visible') {
+      refreshUnread();
+    }
+  };
+  document.addEventListener('visibilitychange', onVisible);
+  window.addEventListener('focus', onVisible);
+  return () => {
+    document.removeEventListener('visibilitychange', onVisible);
+    window.removeEventListener('focus', onVisible);
+  };
+}, [refreshUnread]);
 
   // tiempo real: INSERT y UPDATE(read_at)
   useEffect(() => {
