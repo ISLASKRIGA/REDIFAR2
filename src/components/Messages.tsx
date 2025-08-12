@@ -749,20 +749,32 @@ messages.slice().reverse().forEach((msg) => {
                        <p className="text-sm whitespace-pre-wrap break-words leading-relaxed">{message.content}</p>
 
                         <div className={`flex items-center justify-end mt-1 space-x-1 ${
-                          isOwn ? 'text-white/70' : 'text-gray-500'
-                        }`}>
-                          <span className="text-xs">
-                            {formatTime(message.created_at)}
-                          </span>
-                          {isOwn && !isOptimistic && (
-                            message.read_at ? 
-                              <CheckCircle2 className="w-3 h-3" title="Leído" /> : 
-                              <Circle className="w-3 h-3" title="Enviado" />
-                          )}
-                          {isOptimistic && (
-                            <div className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin" title="Enviando..." />
-                          )}
-                        </div>
+  isOwn ? 'text-white/70' : 'text-gray-500'
+}`}>
+  <span className="text-xs">
+    {formatTime(message.created_at)}
+  </span>
+
+  {/* ⏳ Enviando (optimista) */}
+  {isOwn && isOptimistic && (
+    <div
+      className="w-3 h-3 border border-current border-t-transparent rounded-full animate-spin"
+      title="Enviando..."
+    />
+  )}
+
+  {/* ✓✓ Estados para mensajes propios con ID real */}
+  {isOwn && !isOptimistic && (
+    message.read_at ? (
+      // ✓✓ Leído (azul)
+      <CheckCheck className="w-3 h-3 text-blue-400" title="Leído" />
+    ) : (
+      // ✓✓ Entregado/guardado en servidor (gris)
+      <CheckCheck className="w-3 h-3 text-gray-300" title="Entregado" />
+    )
+  )}
+</div>
+
                       </div>
                     </div>
                   );
