@@ -64,27 +64,30 @@ export const useUnreadMessages = () => {
 )
 
       .on(
-        'postgres_changes',
-        { event: 'UPDATE', schema: 'public', table: 'mensajes' },
-        (payload) => {
-          const oldR = payload.old as any;
-          const m = payload.new as any;
-          // si pasó de no leído -> leído
-          if (
-            m.recipient_hospital_id === currentHospital.id &&
-            oldR?.read_at == null &&
-            m.read_at != null
-          ) {
-            setByHospital(prev => {
-              const next = { ...prev };
-              const k = m.sender_hospital_id;
-              const v = Math.max(0, (next[k] || 0) - 1);
-              if (v === 0) delete next[k]; else next[k] = v;
-              return next;
-            });
-          }
-        }
-      )
+  'postgres_changes',
+  {
+    event: 'UPDATE',
+    schema: 'public',
+    table: 'mensajes',
+    // 🔴 FILTRO por receptor
+    filter: `recipient_hospital_id=eq.${currentHospital.id}`
+  },
+  (payload) => {
+    const oldR = payload.old as any;
+    const m = payload.new as any;
+    // si pasó de no leído -> leído
+    if (oldR?.read_at == null && m.read_at != null) {
+      setByHospital(prev => {
+        const next = { ...prev };
+        const k = m.sender_hospital_id;
+        const v = Math.max(0, (next[k] || 0) - 1);
+        if (v === 0) delete next[k]; else next[k] = v;
+        return next;
+      });
+    }
+  }
+)
+
       .subscribe();
 
     return () => { supabase.removeChannel(ch); };
