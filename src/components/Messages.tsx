@@ -205,9 +205,23 @@ const resizeComposer = () => {
 };
 
 // Auto-ajustar altura como WhatsApp
+// Auto-ajustar altura como WhatsApp (ya lo tienes)
 useEffect(() => {
   resizeComposer();
 }, [messageText]);
+
+// 👇 NUEVO: cuando abres/cambias de conversación
+useEffect(() => {
+  if (!selectedHospital) return;
+  // enfoca sin provocar scroll raro
+  try {
+    (textareaRef.current as HTMLTextAreaElement | null)?.focus({ preventScroll: true } as any);
+  } catch {
+    textareaRef.current?.focus();
+  }
+  resizeComposer();
+}, [selectedHospital]);
+
 
 
 
