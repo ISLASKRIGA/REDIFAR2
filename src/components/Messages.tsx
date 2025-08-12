@@ -476,7 +476,7 @@ useEffect(() => {
     const date = new Date(timestamp);
     const now = new Date();
     const diffInHours = (now.getTime() - date.getTime()) / (1000 * 60 * 60);
-    s
+    
     if (diffInHours < 24) {
       return date.toLocaleTimeString('es-ES', { hour: '2-digit', minute: '2-digit' });
     } else {
